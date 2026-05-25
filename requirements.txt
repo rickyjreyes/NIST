@@ -1,0 +1,7 @@
+numpy>=1.24
+pandas>=2.1
+scipy>=1.10
+matplotlib>=3.7
+pytest>=7.0
+# Optional GPU acceleration (do NOT pin; install only if you want the CuPy script):
+# cupy-cuda12x
