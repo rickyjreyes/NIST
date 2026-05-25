@@ -1,0 +1,4 @@
+Canonical Fe II bin=120 output (5000-null).
+Sourced from: outputs_fe_ion2_120_cupy_full/ (preserved at repo root).
+Statistic produced by scripts/nist_wct_log_spectral_scan_FIXED.py (CPU)
+matches scripts/nist_wct_log_spectral_scan_CUPY.py (GPU-accelerated mirror).
