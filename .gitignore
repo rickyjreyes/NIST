@@ -1,3 +1,44 @@
-scripts/__pycache__/
+# Python cache / test cache
 __pycache__/
+scripts/__pycache__/
 .pytest_cache/
+*.pyc
+*.pyo
+
+# Local editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs / temp
+*.log
+*.tmp
+*.bak
+
+# Archives / legacy generated outputs
+archive/
+archives/
+legacy/
+legacy_outputs/
+outputs/archive/
+outputs/legacy/
+outputs/*_archive/
+
+# Heavy generated output folders
+outputs/**/
+!outputs/
+!outputs/.gitkeep
+!outputs/README.md
+
+# Keep canonical batch summary files
+!outputs/batch_neighbors/
+outputs/batch_neighbors/**/
+!outputs/batch_neighbors/batch_results.csv
+!outputs/batch_neighbors/batch_results.json
+
+# Keep canonical tables
+tables/
+!tables/*.csv
+!tables/*.json
+!tables/*.md
