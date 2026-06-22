@@ -1,0 +1,3 @@
+"model","loglik","n_params","n_bins","deviance","AIC","AICc","BIC","heldout_loglik_test","deltaAIC","deltaBIC","selected_k","heldout_k_lock","deviance_difference","note"
+"M0_smooth_null",-953.216372386261,2,160,1011.9344557793,1910.43274477252,1910.50917789354,1916.58309240299,-523.841554349368,311.727660603729,305.577312973261,31.3265306122449,31.9627851140456,315.727660603729,"k selected by scan; AIC/BIC do not fully account for look-elsewhere"
+"M1_smooth_plus_logperiodic",-795.352542084396,4,160,696.206795175567,1598.70508416879,1598.96314868492,1611.00577942973,-560.677192339407,0,0,31.3265306122449,31.9627851140456,315.727660603729,"k selected by scan; AIC/BIC do not fully account for look-elsewhere"

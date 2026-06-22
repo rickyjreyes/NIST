@@ -195,6 +195,23 @@ main <- function(argv = commandArgs(TRUE)) {
   save_fig(p, file.path(root, "figures_r/statistical_audit/bootstrap_peak_distributions.png"))
   save_fig(p, file.path(root, "figures_r/statistical_audit/fig05_bootstrap_peak_distribution.png"))
 
+  # fig02: canonical Fe II scan curve with the selected peak and bootstrap k CI
+  kci <- ci[ci$quantity == "k_best", ]
+  scan_df <- ref$scan
+  p2 <- ggplot2::ggplot(scan_df, ggplot2::aes(k, deltaD)) +
+    ggplot2::annotate("rect", xmin = kci$ci_lo, xmax = kci$ci_hi, ymin = -Inf, ymax = Inf,
+                      fill = species_colour("Fe"), alpha = 0.15) +
+    ggplot2::geom_line(colour = "grey25", linewidth = 0.5) +
+    ggplot2::geom_vline(xintercept = pe$k_best, linetype = 2, colour = species_colour("Fe")) +
+    ggplot2::labs(
+      title = "Fe II log-cosine scan curve and peak stability",
+      subtitle = sprintf("Selected k=%.3f (log-period 2pi/k=%.4f, scale ratio %.4f); shaded = bootstrap 95%% CI for k.",
+                         pe$k_best, pe$delta_log_x, pe$scale_ratio),
+      x = "k (rad / ln cm^-1)", y = "deltaD = D_base - D_harmonic",
+      caption = "Reference analysis at the primary bin count.") +
+    theme_audit()
+  save_fig(p2, file.path(root, "figures_r/statistical_audit/fig02_feii_scan_stability.png"))
+
   cat(sprintf("[bootstrap] valid=%d/%d  in-region(%.0f%% tol)=%.1f%%  multimodal-k=%s\n",
               sum(draws$converged), nrow(draws), 100 * cfg$tol_primary,
               100 * mean(draws$in_region, na.rm = TRUE),

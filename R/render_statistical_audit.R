@@ -179,12 +179,14 @@ build_claim_matrix <- function(table_dir) {
       sprintf("FPR@0.05 = %.3f [%.3f, %.3f]", a05$observed_fpr, a05$ci_lo, a05$ci_hi),
       "alpha within CI", if (isTRUE(a05$compatible) || a05$compatible == "TRUE") "pass" else "inconclusive",
       "wide CI at small calibration_n", "null_calibration.csv") }
-  if (!is.null(mc)) add("Model comparison (in-sample vs held-out)", "model_comparison",
-    sprintf("deltaAIC(M1)=%.0f; held-out gain=%.1f", mc$deltaAIC[2],
-            mc$heldout_loglik_test[2] - mc$heldout_loglik_test[1]),
+  if (!is.null(mc)) { ho_gain <- mc$heldout_loglik_test[2] - mc$heldout_loglik_test[1]
+    add("Model comparison (in-sample vs held-out)", "model_comparison",
+    sprintf("in-sample AIC favours M1 by %.0f; held-out loglik gain=%.1f (%s)",
+            max(mc$deltaAIC), ho_gain,
+            if (ho_gain > 0) "transfers" else "does NOT transfer to held-out block"),
     "report both", "see result",
     "k from scan; AIC/BIC do not fully correct look-elsewhere; M0 not a physical model",
-    "model_comparison.csv")
+    "model_comparison.csv") }
 
   add("Independent experimental confirmation", "(none)", "not attempted", "n/a",
       "not established", "code-language change is not independent replication", "limitations")
