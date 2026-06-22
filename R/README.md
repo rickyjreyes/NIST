@@ -114,3 +114,140 @@ and Python cannot match draw-for-draw**: R's `rpois` and NumPy's
 
 Because of this, `compare_python_r.R` deliberately does **not** compare
 `nist_null.csv` or `scan_null_p` numerically.
+
+---
+
+## Complete statistical audit
+
+The scripts above are the **canonical reference scanner** and are unchanged. The
+files below add a full, reproducible **statistical audit** *around* that scanner
+(GitHub issue #3). The audit never modifies the numerical meaning of
+`nist_scan_lib.R`, `nist_wct_log_spectral_scan.R`, or the Python reference; it
+re-uses the canonical pipeline (`run_scan_analysis()` wraps the unchanged
+`build_binned` → Gaussian baseline → IRLS Poisson fit → deviance `scan_k`).
+
+### Installation
+
+```powershell
+Rscript .\R\check_audit_dependencies.R
+```
+
+This lists required vs optional packages, prints a single `install.packages(...)`
+command for anything missing, and returns non-zero if a **required** package is
+absent. Nothing is installed silently. Optional packages (`ggridges`, `ggrepel`,
+`future`/`future.apply`, `gt`, `quarto`) degrade gracefully when missing.
+Rendering the Quarto report additionally needs the **Quarto CLI** on `PATH`.
+
+### Development run (small resample counts, fast)
+
+```powershell
+Rscript .\R\render_statistical_audit.R `
+  --fast `
+  --force `
+  --render-report true
+```
+
+`--fast` uses development-only resample counts and labels outputs accordingly.
+Use it to verify wiring, tables and figures before committing to a long run.
+
+### Final run (full resolution — long-running)
+
+```powershell
+Rscript .\R\render_statistical_audit.R `
+  --bootstrap-n 5000 `
+  --null-n 5000 `
+  --calibration-n 10000 `
+  --injection-n 2000 `
+  --seed 20260517 `
+  --parallel true `
+  --force `
+  --strict `
+  --render-report true
+```
+
+**Runtime implications (no promises):** the pure-R scan over the 2500-point
+`k`-grid costs ~1 s per scan. Nulls, bootstraps, calibration and
+injection–recovery each launch thousands of scans, so the full-resolution run is
+expensive (hours, dominated by `--calibration-n` and `--injection-n`). Use
+`--parallel true` with deterministic L'Ecuyer-CMRG streams (results are
+independent of worker count). Run the final command yourself on adequate
+hardware; do not assume it has already been executed.
+
+### Output structure
+
+```
+tables_r/statistical_audit/    machine-readable CSV results
+outputs_r/statistical_audit/   analysis_registry.json + per-analysis outputs
+figures_r/statistical_audit/   300-dpi PNG + SVG/PDF figures (fig01..fig16)
+reports/nist_statistical_audit.qmd   Quarto source
+reports/rendered/              rendered HTML (when Quarto CLI is present)
+```
+
+Module → output map:
+
+| Module | Key outputs |
+|---|---|
+| `check_audit_dependencies.R` | dependency report (stdout) |
+| `build_analysis_registry.R` | `analysis_registry.csv/json` |
+| `build_dataset_flow.R` | `dataset_flow*.csv`, `fig01` |
+| `bootstrap_peak_uncertainty.R` | `peak_estimates.csv`, `bootstrap_peak_draws.csv`, `peak_confidence_intervals.csv`, `fig05` |
+| `peak_stability.R` | `peak_stability.csv`, `fig04` |
+| `build_effect_size_table.R` | `significance_results.csv`, `effect_sizes.csv`, `fig06`, `fig07` |
+| `run_bin_grid.R` | `bin_grid_results.csv`, `bin_stability_summary.csv`, `fig03` + heatmaps |
+| `run_model_sensitivity.R` | `specification_results.csv`, `fig10` + heatmap |
+| `model_comparison.R` | `model_comparison.csv`, `fig11` |
+| `run_observed_ritz_replication.R` | `observed_ritz_replication.csv`, `fig08` |
+| `run_holdout_replication.R` | `holdout_results.csv`, `fig09` |
+| `global_multiple_testing.R` | `multiple_testing.csv`, `family_max_null.csv`, `fig12` |
+| `calibrate_false_positive_rate.R` | `null_calibration.csv`, `fig13` |
+| `run_injection_recovery.R` | `injection_recovery.csv`, `fig14` + bias |
+| `render_statistical_audit.R` | `python_r_parity.csv`, `final_claim_matrix.csv`, `fig15`, `fig16`, report |
+
+### Statistical definitions and conventions
+
+- **Frequency convention.** The harmonic model uses `cos(k·ell)`, `sin(k·ell)`
+  with `ell = ln(wavenumber/cm⁻¹)`, so `k` is an **angular** frequency. The
+  log-period is `Δlog x = 2π/k` and the multiplicative scale ratio is
+  `exp(2π/k)`. `n_obs = k·Δell/(2π)`. Cyclic and angular frequency are never
+  silently interchanged.
+- **Empirical p-value.** `p = (r + 1)/(B + 1)`; never 0. With zero exceedances
+  the corrected estimate equals the **resolution floor** `1/(B + 1)`; this is a
+  resolution-limited bound, **not** an exact `p < 1/(B+1)`.
+- **Pointwise vs scan-global p.** Pointwise p is at the fixed, prespecified `k`;
+  scan-global p uses the **maximum** statistic across the whole `k`-grid in every
+  null realisation (look-elsewhere correction). Both are reported.
+- **Multiplicity family.** Read from the declared registry (bin grid, baseline
+  σ × degree, source fields, neighbouring ions). Corrections: Benjamini–Hochberg
+  FDR, Holm, Bonferroni, and a family-wise max-statistic. Because the analyses
+  share one NIST line list they are **not** independent; this is stated in the
+  output and the corrections are therefore approximate.
+- **Peak-region tolerance.** Defined **before** reading bootstrap results.
+  Primary confirmatory definition: relative tolerance **2 %**; sensitivity also
+  at 1 %, 2 %, 5 %, plus an absolute-tolerance variant. Stability classes are
+  descriptive: high ≥ 80 %, moderate 50–80 %, low < 50 %.
+- **Observed/Ritz distinction.** Observed-, Ritz- and direct-wavenumber datasets
+  are kept strictly separate; this is a **measurement-representation comparison**,
+  not fully independent replication (observed and Ritz often describe the same
+  transitions).
+- **Holdout protocol.** Blocked splits in log-wavenumber space (lower/upper,
+  alternating blocks, repeated blocked K-fold). `k` is estimated on training and
+  **locked** before the test block is evaluated; the confirmatory test never
+  rescans `k`. Exploratory rescans are reported separately and clearly labelled.
+- **Calibration protocol.** Synthetic datasets are generated under the fitted
+  smooth null; the full scan-global selection rule is applied; the observed
+  false-positive rate is compared to nominal α ∈ {0.10, 0.05, 0.01} with exact
+  binomial CIs. Exact calibration is not claimed when the Monte Carlo CI is wide.
+- **Injection protocol.** A known log-periodic mode is injected on the fitted
+  baseline over an amplitude grid {0, …, 0.10} at several frequencies (Fe
+  reference, low/high controls, off-grid). Detection-anywhere, correct-region and
+  globally-significant correct-region are distinguished.
+
+### Interpretation limitations
+
+This audit reports **computational and statistical** evidence only. It does
+**not** establish independent experimental replication, an independent dataset, a
+WCT physical mechanism, a universal atomic law, causal interpretation, or NIST
+endorsement, and it cannot resolve significance below `1/(B+1)`. A change of
+programming language is **not** independent replication. See
+`tables_r/statistical_audit/final_claim_matrix.csv` and the report's executive
+summary for the explicit supported-vs-not-established split.

@@ -19,6 +19,30 @@ Imports:
     jsonlite,
     gmp
 Suggests:
-    testthat (>= 3.0.0)
-SystemRequirements: GNU MP (libgmp) for the 'gmp' package
+    testthat (>= 3.0.0),
+    dplyr,
+    tidyr,
+    purrr,
+    readr,
+    stringr,
+    tibble,
+    ggplot2,
+    scales,
+    viridisLite,
+    viridis,
+    patchwork,
+    ggridges,
+    ggrepel,
+    ragg,
+    svglite,
+    gt,
+    boot,
+    broom,
+    rsample,
+    future,
+    future.apply,
+    progressr,
+    quarto
+SystemRequirements: GNU MP (libgmp) for the 'gmp' package; Quarto CLI
+    (optional) to render reports/nist_statistical_audit.qmd
 RoxygenNote: 7.2.0
