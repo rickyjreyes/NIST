@@ -1,5 +1,5 @@
 {
-  "csv": "data/Fe_lines.csv",
+  "csv": "R:\\RESEARCH\\NIST/data/Fe_lines.csv",
   "ion_filter": 2,
   "n_raw_rows": 20615,
   "n_unique_lines": 9447,
