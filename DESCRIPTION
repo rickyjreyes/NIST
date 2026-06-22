@@ -1,0 +1,24 @@
+Package: nistwctscanR
+Title: NIST Atomic Spectra Log-Cosine Spectral Scan (R reproduction)
+Version: 0.1.0
+Authors@R: person("NIST WCT scan", "contributors", role = c("aut", "cre"),
+    email = "noreply@example.com")
+Description: An independent R computational reproduction of the canonical
+    Python NIST Atomic Spectra log-cosine spectral-density scanner
+    (scripts/nist_wct_log_spectral_scan_FIXED.py). Reads NIST line-list CSV
+    exports, bins line positions in logarithmic wavenumber coordinates, fits a
+    Poisson log-linear baseline plus a one-mode cosine/sine harmonic via IRLS,
+    scans the deviance improvement over a wavenumber-winding grid, and runs a
+    parametric Poisson bootstrap. This is a computational reproduction only; it
+    is not an independent dataset, an independent scientific confirmation, nor
+    endorsed/certified/validated by NIST. NIST is the data provider only.
+License: MIT
+Encoding: UTF-8
+Depends: R (>= 4.1.0)
+Imports:
+    jsonlite,
+    gmp
+Suggests:
+    testthat (>= 3.0.0)
+SystemRequirements: GNU MP (libgmp) for the 'gmp' package
+RoxygenNote: 7.2.0

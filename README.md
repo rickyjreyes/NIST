@@ -152,3 +152,86 @@ python scripts/nist_batch_run_neighbors.py --preview-null 500 --no-promote
   for any extension beyond Fe II.
 - This repository makes no claim of NIST endorsement, certification, or
   validation.
+
+## R implementation
+
+An independent **R computational reproduction** of the canonical Python
+scanner lives under `R/`. It mirrors the scientific definitions, scan grid,
+output schema, and PASS/FAIL gate. The deterministic pipeline (read → clean →
+bin → Gaussian baseline → IRLS Poisson fit → deviance scan) reproduces the
+Python reference to machine precision; see `R/README.md` for the numerical
+conventions and the one documented Python/R RNG difference (the parametric
+Poisson bootstrap).
+
+> **Status:** Python remains the currently established **canonical**
+> implementation until parity tests pass. The committed R outputs already pass
+> the parity checks below (deterministic quantities agree with the Python
+> reference to ≤ ~1e-11 relative). The R port is an **independent computational
+> reproduction**, *not* an independent dataset and *not* an independent
+> scientific confirmation.
+
+### Required R version and packages
+
+- R ≥ 4.1.0.
+- Packages: `jsonlite`, `gmp` (the `gmp` package needs system `libgmp`), and
+  `testthat` for the test suite.
+
+```bash
+# system dependency for gmp (Debian/Ubuntu)
+sudo apt-get install -y libgmp-dev
+
+# R packages
+Rscript -e 'install.packages(c("jsonlite", "gmp", "testthat"), repos="https://cloud.r-project.org")'
+```
+
+(`DESCRIPTION` in the repo root lists the same dependencies.)
+
+### Single-bin example (Fe II, bins = 160, 500-null preview)
+
+```bash
+Rscript R/nist_wct_log_spectral_scan.R \
+    --csv data/Fe_lines.csv --ion 2 --bins 160 \
+    --null-n 500 --min-lines 100 \
+    --out-dir outputs_r/fe_ion2_160
+```
+
+### Full 5000-null example
+
+```bash
+Rscript R/nist_wct_log_spectral_scan.R \
+    --csv data/Fe_lines.csv --ion 2 --bins 160 \
+    --null-n 5000 --min-lines 100 \
+    --out-dir outputs_r/fe_ion2_160
+```
+
+### Bin-stability ladder (Fe II 120 / 160 / 200)
+
+```bash
+Rscript R/run_feii_bin_stability.R --null-n 500
+# aggregates into tables_r/nist_master_results_r.csv
+```
+
+### Verdict
+
+```bash
+Rscript R/make_verdict.R
+# writes tables_r/nist_verdict_r.csv (same gate as scripts/make_verdict.py)
+```
+
+### Tests
+
+```bash
+Rscript tests/testthat.R
+# or: Rscript -e 'testthat::test_dir("tests/testthat")'
+```
+
+### Python-versus-R comparison
+
+```bash
+Rscript R/compare_python_r.R \
+    --py outputs/fe_ion2_160 \
+    --r  outputs_r/fe_ion2_160
+```
+
+R outputs are written under `outputs_r/` and `tables_r/` so the canonical
+Python results under `outputs/` and `tables/` are never modified.
