@@ -1,0 +1,4 @@
+"nominal_alpha","n_outer_sims","inner_null_n","observed_count","expected_count","observed_fpr","ci_lo","ci_hi","calibration_ratio","mc_uncertainty","compatible"
+0.1,25,25,0,2.5,0,0,0.137185171530713,0,0.06,TRUE
+0.05,25,25,0,1.25,0,0,0.137185171530713,0,0.0435889894354067,TRUE
+0.01,25,25,0,0.25,0,0,0.137185171530713,0,0.0198997487421324,TRUE

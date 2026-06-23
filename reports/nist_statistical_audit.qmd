@@ -1,0 +1,249 @@
+---
+title: "NIST Atomic-Line Log-Cosine Spectral Scan — Statistical Audit"
+subtitle: "Reproducible statistical reporting standard for the Fe II analysis suite"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    embed-resources: true
+    theme: cosmo
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+#| include: false
+knitr::opts_chunk$set(fig.align = "center", out.width = "92%")
+here_root <- normalizePath(file.path(dirname(knitr::current_input(dir = TRUE)), ".."),
+                           mustWork = FALSE)
+if (is.na(here_root) || !dir.exists(here_root)) here_root <- normalizePath("..", mustWork = FALSE)
+TAB <- file.path(here_root, "tables_r/statistical_audit")
+FIG <- file.path(here_root, "figures_r/statistical_audit")
+rd <- function(f) { p <- file.path(TAB, f); if (file.exists(p)) utils::read.csv(p, check.names = FALSE) else NULL }
+fig <- function(f) { p <- file.path(FIG, f); if (file.exists(p)) p else NULL }
+show_tab <- function(df, n = NULL) {
+  if (is.null(df)) return(cat("_table not available_"))
+  if (!is.null(n)) df <- utils::head(df, n)
+  knitr::kable(df)
+}
+```
+
+# 1. Executive summary
+
+This report is a **statistical audit** of an independent R computational
+reproduction of the canonical Python NIST log-cosine spectral scanner. It does
+**not** claim independent experimental validation or any physical mechanism.
+
+**Supported by this audit (computational / statistical):**
+
+- deterministic R/Python computational agreement on the canonical pipeline;
+- the observed Fe II scan results and scan-global bootstrap significance;
+- measured bin stability across the predefined 60–240 bin grid;
+- measured bootstrap peak stability in a predefined tolerance;
+- observed-versus-Ritz source consistency;
+- held-out predictive behaviour with the frequency locked from training;
+- calibrated false-positive rate under synthetic nulls;
+- injection–recovery sensitivity.
+
+**Not established here (requires independent evidence):**
+
+- independent experimental replication or an independent dataset;
+- a WCT physical mechanism or a universal atomic law;
+- causal interpretation or NIST endorsement;
+- significance beyond Monte Carlo resolution `1/(B+1)`;
+- independence among all analysis variants (they share one line list).
+
+```{r exec-claims}
+show_tab(rd("final_claim_matrix.csv"))
+```
+
+# 2. Scope and claim boundaries
+
+The scanner bins NIST line positions in `ell = ln(wavenumber / cm^-1)`, fits a
+Poisson log-linear smooth baseline (`M0`), and tests for one additive
+log-periodic mode `a cos(k ell) + b sin(k ell)` (`M1`). Here `k` is an
+**angular** frequency, so the log-period is `2*pi/k` and the multiplicative
+scale ratio is `exp(2*pi/k)`. `M0` is a statistical baseline, **not** a complete
+physical atomic model.
+
+# 3. Dataset accounting
+
+Sequential, mutually exclusive dispositions reconcile exactly to the raw row
+count; independent missing-value diagnostics are reported separately.
+
+```{r flow}
+show_tab(rd("dataset_flow_by_species.csv"))
+```
+
+```{r flow-fig}
+#| out-width: 85%
+p <- fig("fig01_dataset_flow.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 4. Canonical Fe II scan and 5. peak estimates / uncertainty
+
+```{r peaks}
+show_tab(rd("peak_estimates.csv"))
+show_tab(rd("peak_confidence_intervals.csv"))
+```
+
+```{r boot-fig}
+p <- fig("fig05_bootstrap_peak_distribution.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 6. Effect sizes
+
+`z_null` is a **descriptive** standardized distance from the scan-global null
+mean; the null is non-Gaussian, so it is not a Gaussian sigma. Raw `deltaD` is
+not comparable across species without line and bin counts.
+
+```{r eff}
+show_tab(rd("effect_sizes.csv"))
+```
+
+```{r eff-fig}
+p <- fig("fig07_effect_size_forest.png"); if (!is.null(p)) knitr::include_graphics(p)
+p <- fig("fig06_null_ridgelines.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 7. Pointwise versus scan-global significance
+
+Pointwise p is at the fixed prespecified `k`; scan-global p uses the maximum
+statistic across the whole frequency scan (look-elsewhere corrected). Empirical
+`p = (r+1)/(B+1)`; zero exceedances give the resolution floor `1/(B+1)`.
+
+```{r sig}
+show_tab(rd("significance_results.csv"))
+```
+
+# 8. Bin stability
+
+```{r bins}
+show_tab(rd("bin_stability_summary.csv"))
+show_tab(rd("bin_grid_results.csv"))
+```
+
+```{r bins-fig}
+p <- fig("fig03_frequency_by_bin_count.png"); if (!is.null(p)) knitr::include_graphics(p)
+p <- fig("fig04_peak_stability.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 9. Model sensitivity
+
+```{r spec}
+show_tab(rd("specification_results.csv"), 20)
+```
+
+```{r spec-fig}
+p <- fig("fig10_specification_curve.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 10. Neighbouring-ion comparison
+
+See the effect-size table and ridgelines (section 6); neighbouring ions (Cr,
+Mn, Co, Ni, Ti at ion II) are scanned with identical settings.
+
+# 11. Model comparison
+
+```{r mc}
+show_tab(rd("model_comparison.csv"))
+```
+
+```{r mc-fig}
+p <- fig("fig11_model_comparison.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 12. Observed-versus-Ritz comparison
+
+```{r orr}
+show_tab(rd("observed_ritz_replication.csv"))
+```
+
+```{r orr-fig}
+p <- fig("fig08_observed_ritz_comparison.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 13. Blocked holdout validation
+
+```{r ho}
+show_tab(rd("holdout_results.csv"))
+```
+
+```{r ho-fig}
+p <- fig("fig09_holdout_validation.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 14. Multiple-analysis correction
+
+```{r mt}
+show_tab(rd("multiple_testing.csv"))
+```
+
+```{r mt-fig}
+p <- fig("fig12_multiplicity_comparison.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 15. Synthetic-null calibration
+
+```{r cal}
+show_tab(rd("null_calibration.csv"))
+```
+
+```{r cal-fig}
+p <- fig("fig13_null_calibration.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 16. Injection–recovery power
+
+```{r inj}
+show_tab(rd("injection_recovery.csv"), 16)
+```
+
+```{r inj-fig}
+p <- fig("fig14_injection_recovery_power.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 17. Python/R parity
+
+```{r par}
+show_tab(rd("python_r_parity.csv"))
+```
+
+```{r par-fig}
+p <- fig("fig15_python_r_parity.png"); if (!is.null(p)) knitr::include_graphics(p)
+p <- fig("fig16_evidence_dashboard.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 18. Limitations
+
+- This is a computational reproduction; a different programming language is
+  **not** independent replication.
+- Observed and Ritz representations often describe the same transitions and are
+  not independent datasets.
+- The declared analyses share one NIST line list; multiplicity corrections are
+  approximate and their conservativeness is discussed in section 14.
+- Monte Carlo p-values cannot resolve below `1/(B+1)`.
+- `M0` is a smooth statistical baseline, not a physical atomic model; no WCT
+  mechanism, universal law, or NIST endorsement is claimed.
+
+# 19. Reproducibility information
+
+```{r repro}
+cat("Analysis registry:", file.path("tables_r/statistical_audit", "analysis_registry.csv"), "\n")
+reg <- rd("analysis_registry.csv")
+if (!is.null(reg)) cat("Declared analyses:", nrow(reg),
+                       "| seed:", unique(reg$seed)[1],
+                       "| git:", unique(reg$git_commit)[1], "\n")
+cat("Date:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n")
+cat("Exact development command:\n",
+    "Rscript R/render_statistical_audit.R --fast --force --render-report true\n\n")
+cat("Exact final command:\n",
+    "Rscript R/render_statistical_audit.R --bootstrap-n 5000 --null-n 5000",
+    "--calibration-n 10000 --injection-n 2000 --seed 20260517 --parallel true",
+    "--force --strict --render-report true\n")
+sessionInfo()
+```

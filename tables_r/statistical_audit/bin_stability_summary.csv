@@ -1,0 +1,2 @@
+"mean_k","median_k","sd_k","iqr_k","cv_k","max_relative_drift","n_mode_switches","pct_in_reference","stability_class","n_bins_tested","tol_relative"
+24.8271908763505,31.3265306122449,10.4576432670173,16.2085834333733,0.421217338646993,0.69258478635754,1,0.7,"moderate",10,0.02
