@@ -1,0 +1,57 @@
+title: "[Proposal] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Propose a testable improvement to the scanner, null model, sensitivity analysis, dataset coverage, or reporting layer. Favor proposals with explicit success and failure criteria.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Data provenance or coverage
+        - Baseline model
+        - Null model or trial correction
+        - Robustness and sensitivity
+        - Cross-language reproduction
+        - New species or ion
+        - Performance
+        - Documentation or machine-readable outputs
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or research question
+      description: What limitation, uncertainty, or capability does this address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the method, files, parameters, and outputs that would change.
+    validations:
+      required: true
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Success and failure criteria
+      description: State in advance what result would support, weaken, or reject the proposal.
+    validations:
+      required: true
+  - type: textarea
+    id: controls
+    attributes:
+      label: Required controls
+      description: Include alternate baselines, nulls, holdouts, neighboring ions, trial corrections, or negative controls as applicable.
+    validations:
+      required: false
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility and provenance
+      description: Explain how canonical outputs remain distinguishable from exploratory outputs and how prior results remain reproducible.
+    validations:
+      required: false
