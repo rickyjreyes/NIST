@@ -1,0 +1,63 @@
+title: "[Reproduction or Extension] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share a reproduction, failed reproduction, robustness check, independent implementation, or clearly labeled exploratory extension. Null and negative results are welcome.
+  - type: dropdown
+    id: contribution_type
+    attributes:
+      label: Contribution type
+      options:
+        - Exact reproduction
+        - Failed or incomplete reproduction
+        - Independent implementation
+        - Robustness or sensitivity test
+        - New species or ion extension
+        - Alternate statistical model
+        - Visualization or reporting tool
+    validations:
+      required: true
+  - type: textarea
+    id: provenance
+    attributes:
+      label: Data provenance
+      description: Identify the source export, species, ionization stage, filters, and any transformations.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and command
+      description: Include OS, language and package versions, commit SHA, random seed, and exact command.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Results
+      description: Report k_best, winding, deviance improvement, null exceedances, empirical p-value, and sensitivity results where applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Auditable artifacts
+      description: Link to code, logs, machine-readable tables, plots, environment lockfiles, or an archived release.
+    validations:
+      required: true
+  - type: textarea
+    id: comparison
+    attributes:
+      label: Comparison with canonical results
+      description: State what agrees, what differs, and the numerical tolerance used.
+    validations:
+      required: true
+  - type: textarea
+    id: limits
+    attributes:
+      label: Limitations and interpretation
+      description: Separate computational agreement, statistical evidence, and any proposed physical interpretation.
+    validations:
+      required: true
