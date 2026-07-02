@@ -1,0 +1,69 @@
+title: "[Question] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this category for questions about the scanner, datasets, statistical model, reproduction workflow, or interpretation of results.
+
+        This repository uses public NIST Atomic Spectra Database exports but is not endorsed, certified, or validated by NIST.
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      options:
+        - Installation or environment
+        - Data import or cleaning
+        - Python scanner
+        - R reproduction
+        - Statistical model or null
+        - Bin stability or sensitivity
+        - Result interpretation
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Repository version
+      description: Commit SHA, tag, or branch used.
+      placeholder: main at abc1234
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: State the exact technical or scientific question.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction details
+      description: Include operating system, Python or R version, command, species, ion, bins, null count, and any changed parameters.
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed result
+      description: Paste the relevant output, traceback, table row, or artifact path.
+    validations:
+      required: false
+  - type: textarea
+    id: interpretation
+    attributes:
+      label: Current interpretation
+      description: Distinguish a software issue, reproducibility issue, statistical concern, or physical interpretation question.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before posting
+      options:
+        - label: I checked the README and existing discussions.
+          required: true
+        - label: I understand that computational reproduction is not independent scientific confirmation.
+          required: true
