@@ -61,9 +61,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build independent R image
-        run: docker build --quiet --file Dockerfile.r --tag nist-r-ci .
+        id: r_build
+        shell: bash
+        run: |
+          set +e
+          set -o pipefail
+          docker build --progress=plain --file Dockerfile.r --tag nist-r-ci . \
+            2>&1 | tee r-build.log
+          status=${PIPESTATUS[0]}
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
       - name: Run R test suite
         id: r_tests
+        if: steps.r_build.outputs.status == '0'
         shell: bash
         run: |
           set +e
@@ -72,12 +82,17 @@ jobs:
           echo "status=$status" >> "$GITHUB_OUTPUT"
           tail -n 250 r-test.log
           exit 0
-      - name: Upload R test diagnostics
+      - name: Upload R diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nist-r-test-log-${{ github.sha }}
-          if-no-files-found: error
-          path: r-test.log
-      - name: Enforce R test result
-        run: test "${{ steps.r_tests.outputs.status }}" -eq 0
+          name: nist-r-diagnostics-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            r-build.log
+            r-test.log
+      - name: Enforce R image and test results
+        shell: bash
+        run: |
+          test "${{ steps.r_build.outputs.status }}" -eq 0
+          test "${{ steps.r_tests.outputs.status }}" -eq 0
