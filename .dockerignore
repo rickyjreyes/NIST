@@ -1,0 +1,13 @@
+.git
+.github
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.Rhistory
+.RData
+.Rproj.user/
+.venv/
+venv/
+outputs_*/
+outputs_r/
+tables_r/
