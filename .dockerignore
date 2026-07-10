@@ -8,7 +8,6 @@ __pycache__/
 .Rproj.user/
 .venv/
 venv/
-outputs/
 outputs_*/
 outputs_r/
 tables_r/
