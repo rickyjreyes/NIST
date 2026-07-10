@@ -1,0 +1,66 @@
+name: Python, R, and container CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: container-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-canonical:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --requirement requirements.txt
+      - name: Run scanner tests
+        run: python -m pytest -q
+      - name: Run a quick canonical Fe II scan
+        run: |
+          python scripts/nist_wct_log_spectral_scan_FIXED.py \
+            --csv data/Fe_lines.csv \
+            --ion 2 \
+            --bins 160 \
+            --null-n 10 \
+            --min-lines 100 \
+            --out-dir /tmp/nist-preview
+
+  python-container:
+    runs-on: ubuntu-24.04
+    needs: python-canonical
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build canonical Python image
+        run: docker build --tag nist-python-ci .
+      - name: Run a quick scan in the Python image
+        run: |
+          docker run --rm nist-python-ci \
+            python scripts/nist_wct_log_spectral_scan_FIXED.py \
+            --csv data/Fe_lines.csv \
+            --ion 2 \
+            --bins 160 \
+            --null-n 5 \
+            --min-lines 100 \
+            --out-dir /tmp/nist-preview
+
+  r-container:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build independent R image
+        run: docker build --file Dockerfile.r --tag nist-r-ci .
+      - name: Run R test suite
+        run: docker run --rm nist-r-ci
