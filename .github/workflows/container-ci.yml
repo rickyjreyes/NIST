@@ -63,7 +63,21 @@ jobs:
       - name: Build independent R image
         run: docker build --quiet --file Dockerfile.r --tag nist-r-ci .
       - name: Run R test suite
+        id: r_tests
         shell: bash
         run: |
-          set -o pipefail
-          docker run --rm nist-r-ci 2>&1 | tail -n 250
+          set +e
+          docker run --rm nist-r-ci > r-test.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          tail -n 250 r-test.log
+          exit 0
+      - name: Upload R test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nist-r-test-log-${{ github.sha }}
+          if-no-files-found: error
+          path: r-test.log
+      - name: Enforce R test result
+        run: test "${{ steps.r_tests.outputs.status }}" -eq 0
