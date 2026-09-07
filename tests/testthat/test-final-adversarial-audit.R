@@ -11,7 +11,8 @@
 
 test_that("final audit entry points source without executing their main routines", {
   for (name in c("global_multiple_testing.R", "run_alternative_nulls.R",
-                 "build_final_adversarial_summary.R", "run_final_adversarial_audit.R")) {
+                 "run_holdout_replication.R", "build_final_adversarial_summary.R",
+                 "run_final_adversarial_audit.R")) {
     e <- .src_final_module(name)
     expect_true(exists("main", envir = e, inherits = FALSE), info = name)
   }
@@ -99,4 +100,13 @@ test_that("primary multiplicity row recognises canonical metadata and legacy ids
     family_max_p = c(0.2, 0.01), stringsAsFactors = FALSE)
   old <- s$primary_row(legacy)
   expect_equal(old$analysis_id, "fe_ion2_wn_bingrid160")
+})
+
+test_that("baseline-refit holdout test requires a smoothing sigma", {
+  ho <- .src_final_module("run_holdout_replication.R")
+  expect_error(
+    ho$fixed_k_test_p(c(1, 2, 3), c(4, 5, 6), c(4, 5, 6),
+                      degree = 1, k = 2, B = 2, refit_baseline = TRUE),
+    "sigma is required"
+  )
 })
