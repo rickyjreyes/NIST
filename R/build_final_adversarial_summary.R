@@ -2,16 +2,9 @@
 # build_final_adversarial_summary.R
 # ---------------------------------------------------------------------------
 # Cross-cutting final evidence summary for the adversarial NIST audit.
-#
-# This script does NOT recompute scans.  It consumes the machine-readable
-# outputs from the audit modules and produces:
-#   - calibrated_global_evidence.csv : one-row conservative evidence dashboard
-#   - final_adversarial_claim_matrix.csv : explicit pass/fail/mixed/not-established
-#   - failed_claims.csv : every non-passing claim retained verbatim
-#
-# A failed or mixed claim is never converted to a neutral "see result" label.
-# The largest reported global p-value is exposed as a conservative diagnostic
-# summary; it is NOT represented as a new mathematically-combined p-value.
+# Produces a conservative global-evidence dashboard, an explicit claim matrix,
+# and a table containing EVERY non-passing claim.  A failed result is never
+# converted to a neutral label merely because another analysis passes.
 # ---------------------------------------------------------------------------
 
 .this <- sub("^--file=", "", commandArgs(FALSE)[grep("^--file=", commandArgs(FALSE))][1])
@@ -33,13 +26,21 @@ read_audit_table <- function(root, name, required = TRUE) {
 
 primary_row <- function(df) {
   if (is.null(df) || nrow(df) == 0L) return(NULL)
-  if ("analysis_id" %in% names(df)) {
-    hit <- which(df$analysis_id == "fe_ion2_wn_bin160")
-    if (length(hit) == 0L) hit <- grep("^fe_ion2_wn.*160$", df$analysis_id)
+  # Prefer exact canonical metadata when available.  This survives analysis-id
+  # naming changes and prevents a neighbouring sigma/degree variant being used.
+  need <- c("species", "source", "bins", "sigma", "degree")
+  if (all(need %in% names(df))) {
+    hit <- which(df$species == "Fe" & df$source == "wavenumber" & df$bins == 160 &
+                 abs(df$sigma - 6) < 1e-12 & df$degree == 1)
     if (length(hit) > 0L) return(df[hit[1], , drop = FALSE])
   }
   if (all(c("species", "source", "bins") %in% names(df))) {
     hit <- which(df$species == "Fe" & df$source == "wavenumber" & df$bins == 160)
+    if (length(hit) > 0L) return(df[hit[1], , drop = FALSE])
+  }
+  if ("analysis_id" %in% names(df)) {
+    hit <- which(df$analysis_id == "fe_ion2_wn_bin160")
+    if (length(hit) == 0L) hit <- grep("^fe_ion2_wn.*bin160", df$analysis_id)
     if (length(hit) > 0L) return(df[hit[1], , drop = FALSE])
   }
   df[1, , drop = FALSE]
@@ -85,37 +86,46 @@ build_summary <- function(root) {
   mc1 <- mc[mc$model == "M1_smooth_plus_logperiodic", , drop = FALSE]
   if (nrow(mc0) == 0L || nrow(mc1) == 0L) stop("model comparison rows M0/M1 missing")
   heldout_gain <- mc1$heldout_loglik_test[1] - mc0$heldout_loglik_test[1]
+
   primary_peak <- peak[peak$is_primary %in% c(TRUE, "TRUE"), , drop = FALSE]
   if (nrow(primary_peak) == 0L) primary_peak <- peak[1, , drop = FALSE]
   spec_frac <- mean(spec$in_reference_region %in% c(TRUE, "TRUE"), na.rm = TRUE)
   inj0 <- inj[inj$freq_name == "fe_reference" & abs(inj$amplitude) < 1e-12, , drop = FALSE]
   if (nrow(inj0) == 0L) inj0 <- inj[which.min(abs(inj$amplitude)), , drop = FALSE]
 
-  p_candidates <- c(s$global_p[1], m$family_max_p[1], a$scan_global_p[1])
+  by <- if ("by_fdr" %in% names(m)) m$by_fdr[1] else NA_real_
+  multiplicity_fwer_worst <- max(c(m$family_max_p[1], m$holm_p[1], m$bonferroni_p[1]), na.rm = TRUE)
+  p_candidates <- c(s$global_p[1], m$family_max_p[1], m$holm_p[1],
+                    m$bonferroni_p[1], m$bh_fdr[1], by, a$scan_global_p[1])
   largest_p <- max(p_candidates, na.rm = TRUE)
 
   evidence <- data.frame(
-    analysis_id = "fe_ion2_wn_bin160",
+    analysis_id = "fe_ion2_wn_bin160_sigma6_degree1",
     observed_deltaD = s$global_statistic[1],
     scan_global_p = s$global_p[1],
     scan_global_tail_count = s$global_tail_count[1],
     scan_global_B = s$global_B[1],
     family_max_p = m$family_max_p[1],
-    bh_fdr = m$bh_fdr[1],
     holm_p = m$holm_p[1],
     bonferroni_p = m$bonferroni_p[1],
+    bh_fdr = m$bh_fdr[1],
+    by_fdr = by,
     family_size = m$family_size[1],
+    worst_fwer_adjusted_p = multiplicity_fwer_worst,
     worst_alternative_null = a$null_model[1],
     worst_alternative_null_p = a$scan_global_p[1],
     worst_alternative_null_B = a$B[1],
     largest_reported_global_p = largest_p,
-    largest_reported_global_p_note = "max(scan-global, family-max, worst alternative-null); conservative diagnostic, not a newly combined formal p-value",
+    largest_reported_global_p_note = paste(
+      "maximum of scan-global, family-max, Holm, Bonferroni, BH, BY, and worst alternative-null p-values;",
+      "conservative diagnostic only, not a newly combined formal p-value"),
     calibration_fpr_alpha_0_05 = c05$observed_fpr[1],
     calibration_ci_lo = c05$ci_lo[1],
     calibration_ci_hi = c05$ci_hi[1],
     calibration_compatible = is_true(c05$compatible[1]),
     holdout_designs = nrow(ho),
-    holdout_sig_direction_consistent = sum(is.finite(ho$fixed_k_test_p) & ho$fixed_k_test_p <= 0.05 & ho$direction_consistent %in% c(TRUE, "TRUE")),
+    holdout_sig_direction_consistent = sum(is.finite(ho$fixed_k_test_p) & ho$fixed_k_test_p <= 0.05 &
+                                            ho$direction_consistent %in% c(TRUE, "TRUE")),
     holdout_median_fixed_k_p = stats::median(ho$fixed_k_test_p, na.rm = TRUE),
     heldout_model_loglik_gain_M1_minus_M0 = heldout_gain,
     bin_reference_fraction = bins$pct_in_reference[1],
@@ -135,11 +145,13 @@ build_summary <- function(root) {
       "empirical p is bounded by Monte Carlo resolution; zero exceedances are not an exact smaller p",
       "significance_results.csv")
 
-  add("Fe II declared-family multiplicity correction", "global_multiple_testing",
-      sprintf("family-max p=%.4g; BH=%.4g; Holm=%.4g; Bonferroni=%.4g; family=%d",
-              m$family_max_p[1], m$bh_fdr[1], m$holm_p[1], m$bonferroni_p[1], m$family_size[1]),
-      "family-max p <= 0.05", threshold_verdict(m$family_max_p[1], 0.05, FALSE),
-      "analyses share underlying NIST line lists; family-max construction is still an approximation to a fully joint generative null",
+  add("Fe II full declared-family FWER correction", "global_multiple_testing",
+      sprintf("family-max=%.4g; Holm=%.4g; Bonferroni=%.4g; BH=%.4g; BY=%s; family=%d",
+              m$family_max_p[1], m$holm_p[1], m$bonferroni_p[1], m$bh_fdr[1],
+              if (is.finite(by)) sprintf("%.4g", by) else "NA", m$family_size[1]),
+      "all reported FWER-adjusted p-values <= 0.05",
+      threshold_verdict(multiplicity_fwer_worst, 0.05, FALSE),
+      "Holm/Bonferroni are valid without independence; family-max uses an approximate marginal-null coupling; BY is also reported for arbitrary-dependence FDR",
       "multiple_testing.csv")
 
   bad_alt <- alt$null_model[alt$scan_global_p > 0.05]
@@ -155,13 +167,14 @@ build_summary <- function(root) {
       sprintf("FPR@0.05=%.4f [%.4f, %.4f]", c05$observed_fpr[1], c05$ci_lo[1], c05$ci_hi[1]),
       "nominal 0.05 lies within calibration CI",
       if (is_true(c05$compatible[1])) "pass" else "fail",
-      "calibration tests the declared synthetic-null mechanism, not every possible misspecification",
+      "calibration tests the canonical fitted-Poisson synthetic null; alternative-null robustness is reported separately",
       "null_calibration.csv")
 
   hverd <- holdout_verdict(ho$fixed_k_test_p, ho$direction_consistent %in% c(TRUE, "TRUE"))
   add("Frozen blocked holdout replication", "run_holdout_replication",
       sprintf("%d/%d designs have p<=0.05 and positive locked-k direction; median p=%.4g",
-              sum(is.finite(ho$fixed_k_test_p) & ho$fixed_k_test_p <= 0.05 & ho$direction_consistent %in% c(TRUE, "TRUE")),
+              sum(is.finite(ho$fixed_k_test_p) & ho$fixed_k_test_p <= 0.05 &
+                  ho$direction_consistent %in% c(TRUE, "TRUE")),
               nrow(ho), stats::median(ho$fixed_k_test_p, na.rm = TRUE)),
       "strict: every declared blocked design p<=0.05 with positive direction",
       hverd,
@@ -171,7 +184,7 @@ build_summary <- function(root) {
   add("Held-out predictive transfer of smooth-plus-periodic model", "model_comparison",
       sprintf("held-out log-likelihood gain M1-M0 = %.4f", heldout_gain),
       "gain > 0", if (heldout_gain > 0) "pass" else "fail",
-      "this explicitly preserves the previously observed failure when the in-sample model gain does not transfer",
+      "explicitly preserves the prior failure if the large in-sample model gain does not transfer out of sample",
       "model_comparison.csv")
 
   add("Declared Fe II bin stability", "bin_stability_summary",
@@ -192,17 +205,17 @@ build_summary <- function(root) {
       sprintf("%.1f%% of declared specifications select the reference region", 100 * spec_frac),
       ">= 80% (adversarial descriptive threshold)",
       threshold_verdict(spec_frac, 0.80, TRUE),
-      "the threshold is a robustness convention; full table remains primary evidence",
+      "the threshold is a robustness convention; the full specification table remains primary evidence",
       "specification_results.csv")
 
   add("Injection null type-I behaviour", "run_injection_recovery",
       sprintf("A=0 detection probability=%.4f (%d simulations)", inj0$detection_prob[1], inj0$n_sims[1]),
       "<= 0.05", threshold_verdict(inj0$detection_prob[1], 0.05, FALSE),
-      "finite simulation uncertainty applies; calibration table is the dedicated type-I assessment",
+      "finite simulation uncertainty applies; null_calibration.csv is the dedicated type-I assessment",
       "injection_recovery.csv")
 
-  add("Independent experimental confirmation", "none",
-      "not attempted", "independent dataset/experiment required", "not established",
+  add("Independent experimental confirmation", "none", "not attempted",
+      "independent dataset/experiment required", "not established",
       "programming-language parity, alternate preprocessing, and same-line-list holdouts are not independent experiments",
       "limitations")
 
@@ -212,7 +225,7 @@ build_summary <- function(root) {
       "limitations")
 
   claim_tab <- do.call(rbind, claims)
-  nonpassing <- claim_tab[!(claim_tab$verdict %in% c("pass")), , drop = FALSE]
+  nonpassing <- claim_tab[claim_tab$verdict != "pass", , drop = FALSE]
   list(evidence = evidence, claims = claim_tab, nonpassing = nonpassing)
 }
 
@@ -229,6 +242,4 @@ main <- function(argv = commandArgs(TRUE)) {
 }
 
 .invoked_file <- sub("^--file=", "", commandArgs(FALSE)[grep("^--file=", commandArgs(FALSE))])
-if (length(.invoked_file) > 0L && grepl("build_final_adversarial_summary\\.R$", .invoked_file)) {
-  main()
-}
+if (length(.invoked_file) > 0L && grepl("build_final_adversarial_summary\\.R$", .invoked_file)) main()
