@@ -1,5 +1,5 @@
 # test-final-adversarial-audit.R
-# Fast unit tests for the final adversarial audit.  These tests exercise pure
+# Fast unit tests for the final adversarial audit. These tests exercise pure
 # helpers and small synthetic vectors only; they do not run Monte Carlo scans.
 
 .src_final_module <- function(name) {
@@ -8,6 +8,14 @@
   sys.source(p, envir = e)
   e
 }
+
+test_that("final audit entry points source without executing their main routines", {
+  for (name in c("global_multiple_testing.R", "run_alternative_nulls.R",
+                 "build_final_adversarial_summary.R", "run_final_adversarial_audit.R")) {
+    e <- .src_final_module(name)
+    expect_true(exists("main", envir = e, inherits = FALSE), info = name)
+  }
+})
 
 test_that("negative-binomial size reduces to Poisson when no overdispersion is estimated", {
   alt <- .src_final_module("run_alternative_nulls.R")
@@ -75,12 +83,20 @@ test_that("descriptive robustness thresholds are explicit pass/fail rather than 
   expect_equal(s$threshold_verdict(0.051, 0.05, FALSE), "fail")
 })
 
-test_that("primary multiplicity row recognises the bingrid primary analysis id", {
+test_that("primary multiplicity row recognises canonical metadata and legacy ids", {
   s <- .src_final_module("build_final_adversarial_summary.R")
   x <- data.frame(
-    analysis_id = c("fe_ion2_wn_bingrid120", "fe_ion2_wn_bingrid160"),
+    analysis_id = c("fe_ion2_wn_bin160_sig5_deg1", "fe_ion2_wn_bin160_sig6_deg1"),
+    species = c("Fe", "Fe"), source = c("wavenumber", "wavenumber"),
+    bins = c(160, 160), sigma = c(5, 6), degree = c(1, 1),
     family_max_p = c(0.2, 0.01), stringsAsFactors = FALSE)
   row <- s$primary_row(x)
-  expect_equal(row$analysis_id, "fe_ion2_wn_bingrid160")
+  expect_equal(row$analysis_id, "fe_ion2_wn_bin160_sig6_deg1")
   expect_equal(row$family_max_p, 0.01)
+
+  legacy <- data.frame(
+    analysis_id = c("fe_ion2_wn_bingrid120", "fe_ion2_wn_bingrid160"),
+    family_max_p = c(0.2, 0.01), stringsAsFactors = FALSE)
+  old <- s$primary_row(legacy)
+  expect_equal(old$analysis_id, "fe_ion2_wn_bingrid160")
 })
