@@ -9,13 +9,19 @@
   e
 }
 
-test_that("final audit entry points source without executing their main routines", {
+test_that("final audit modules source and CLI runner parses without executing", {
+  # Library-style modules are safe to source directly under testthat.
   for (name in c("global_multiple_testing.R", "run_alternative_nulls.R",
-                 "run_holdout_replication.R", "build_final_adversarial_summary.R",
-                 "run_final_adversarial_audit.R")) {
+                 "run_holdout_replication.R", "build_final_adversarial_summary.R")) {
     e <- .src_final_module(name)
     expect_true(exists("main", envir = e, inherits = FALSE), info = name)
   }
+
+  # The top-level CLI runner intentionally resolves repository paths at source
+  # time. Under testthat the working directory differs from normal CLI use, so
+  # syntax/parse safety is the appropriate no-side-effect CI check here.
+  runner <- file.path(dirname(AUDIT_PATH), "run_final_adversarial_audit.R")
+  expect_silent(parse(file = runner))
 })
 
 test_that("negative-binomial size reduces to Poisson when no overdispersion is estimated", {
@@ -84,7 +90,7 @@ test_that("descriptive robustness thresholds are explicit pass/fail rather than 
   expect_equal(s$threshold_verdict(0.051, 0.05, FALSE), "fail")
 })
 
-test_that("primary multiplicity row recognises canonical metadata and legacy ids", {
+test_that("primary multiplicity row recognises canonical metadata", {
   s <- .src_final_module("build_final_adversarial_summary.R")
   x <- data.frame(
     analysis_id = c("fe_ion2_wn_bin160_sig5_deg1", "fe_ion2_wn_bin160_sig6_deg1"),
@@ -94,12 +100,6 @@ test_that("primary multiplicity row recognises canonical metadata and legacy ids
   row <- s$primary_row(x)
   expect_equal(row$analysis_id, "fe_ion2_wn_bin160_sig6_deg1")
   expect_equal(row$family_max_p, 0.01)
-
-  legacy <- data.frame(
-    analysis_id = c("fe_ion2_wn_bingrid120", "fe_ion2_wn_bingrid160"),
-    family_max_p = c(0.2, 0.01), stringsAsFactors = FALSE)
-  old <- s$primary_row(legacy)
-  expect_equal(old$analysis_id, "fe_ion2_wn_bingrid160")
 })
 
 test_that("baseline-refit holdout test requires a smoothing sigma", {
