@@ -1,0 +1,275 @@
+---
+title: "NIST Atomic-Line Log-Cosine Scan — Final Adversarial Statistical Audit"
+subtitle: "Global calibration, frozen holdouts, alternative nulls, and preserved failures"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    embed-resources: true
+    theme: cosmo
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+#| include: false
+knitr::opts_chunk$set(fig.align = "center", out.width = "92%")
+here_root <- normalizePath(file.path(dirname(knitr::current_input(dir = TRUE)), ".."),
+                           mustWork = FALSE)
+if (is.na(here_root) || !dir.exists(here_root)) here_root <- normalizePath("..", mustWork = FALSE)
+TAB <- file.path(here_root, "tables_r/statistical_audit")
+FIG <- file.path(here_root, "figures_r/statistical_audit")
+rd <- function(f) {
+  p <- file.path(TAB, f)
+  if (file.exists(p)) utils::read.csv(p, stringsAsFactors = FALSE, check.names = FALSE) else NULL
+}
+fig <- function(f) {
+  p <- file.path(FIG, f)
+  if (file.exists(p)) p else NULL
+}
+show_tab <- function(df, n = NULL) {
+  if (is.null(df)) return(cat("_table not available_"))
+  if (!is.null(n)) df <- utils::head(df, n)
+  knitr::kable(df)
+}
+```
+
+# 1. Executive verdict
+
+This report is the **final adversarial statistical audit** of the NIST atomic-line
+log-cosine scan.  It is deliberately stricter than the development audit:
+full-resolution Monte Carlo budgets are passed to every module without hidden
+500/1,000-trial caps; the frequency is frozen before every confirmatory holdout;
+alternative null generators are tested; and every failed, mixed, inconclusive,
+or not-established claim is retained in a separate machine-readable table.
+
+The central global-evidence table is shown below.  The column
+`largest_reported_global_p` is the **largest** of the primary scan-global,
+declared-family maximum-statistic, and worst alternative-null p-values.  It is a
+conservative diagnostic summary only — **not** a newly combined formal p-value.
+
+```{r global-evidence}
+show_tab(rd("calibrated_global_evidence.csv"))
+```
+
+# 2. Claims — including failures
+
+No result is promoted merely because another analysis passes.  In particular,
+failed held-out predictive transfer, weak bin/specification stability, an
+alternative-null failure, or a non-significant frozen holdout remains a failed or
+mixed claim even if the in-sample peak is strong.
+
+```{r final-claims}
+show_tab(rd("final_adversarial_claim_matrix.csv"))
+```
+
+## 2.1 Non-passing claims retained explicitly
+
+This table is mechanically generated from the claim matrix and contains every
+verdict other than `pass`.
+
+```{r failed-claims}
+show_tab(rd("failed_claims.csv"))
+```
+
+# 3. Exact dataset and analysis provenance
+
+```{r provenance}
+show_tab(rd("final_adversarial_run_manifest.csv"))
+show_tab(rd("final_adversarial_module_status.csv"))
+show_tab(rd("analysis_registry.csv"), 30)
+show_tab(rd("dataset_flow_by_species.csv"))
+```
+
+# 4. Primary peak and bootstrap uncertainty
+
+The bootstrap uncertainty analysis resamples the observed dataset.  It measures
+sampling/selection stability of the same line list; it is **not** independent
+experimental replication.
+
+```{r bootstrap}
+show_tab(rd("peak_estimates.csv"))
+show_tab(rd("peak_confidence_intervals.csv"))
+show_tab(rd("peak_stability.csv"))
+```
+
+```{r bootstrap-figure}
+p <- fig("fig05_bootstrap_peak_distribution.png")
+if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 5. Full-scan look-elsewhere correction
+
+Pointwise and scan-global evidence are kept separate.  The scan-global statistic
+is the maximum deviance improvement over the full declared frequency grid.
+Empirical p-values use `(r + 1)/(B + 1)`; zero exceedances are reported at the
+Monte Carlo resolution floor rather than as p=0.
+
+```{r global-scan}
+show_tab(rd("significance_results.csv"))
+```
+
+# 6. Declared-family multiplicity correction
+
+The audit reports BH-FDR, Holm, Bonferroni, and a family maximum-statistic
+calibration across the declared analysis family.  Shared underlying line lists
+make the family dependence nontrivial; this dependence is preserved as a stated
+limitation rather than hidden.
+
+```{r multiplicity}
+show_tab(rd("multiple_testing.csv"))
+```
+
+```{r multiplicity-figure}
+p <- fig("fig12_multiplicity_comparison.png")
+if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 7. Adversarial alternative null models
+
+The primary canonical null is supplemented with four stress tests:
+
+1. fitted Poisson with the smoothing baseline re-estimated per replicate;
+2. conditional multinomial counts with fixed total line count;
+3. a negative-binomial overdispersion null;
+4. a block-permuted Pearson-residual diagnostic that preserves local residual
+   chunks while destroying coherent long-range ordering.
+
+The conservative result is the **largest** scan-global p-value among the declared
+nulls.  The block-residual model is explicitly a misspecification diagnostic,
+not asserted to be the unique physical null.
+
+```{r alt-nulls}
+show_tab(rd("alternative_null_results.csv"))
+```
+
+```{r alt-nulls-figure}
+p <- fig("fig17_alternative_nulls.png")
+if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 8. Synthetic-null calibration
+
+Synthetic-null calibration asks whether the scan-global decision rule achieves
+approximately its nominal type-I error rate under the declared canonical null.
+The interval is reported because finite Monte Carlo uncertainty can be material.
+
+```{r calibration}
+show_tab(rd("null_calibration.csv"))
+```
+
+```{r calibration-figure}
+p <- fig("fig13_null_calibration.png")
+if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 9. Frozen blocked holdouts
+
+For every confirmatory holdout, `k` is selected **only on training bins and then
+locked**.  The test block is evaluated at that fixed frequency.  Test-block
+rescans, where present, remain exploratory and cannot rescue a failed locked-k
+result.
+
+```{r holdout}
+show_tab(rd("holdout_results.csv"))
+```
+
+```{r holdout-figure}
+p <- fig("fig09_holdout_validation.png")
+if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 10. Preprocessing and specification sensitivity
+
+The predefined multiverse varies baseline smoothing, polynomial degree, bin
+count, and line-position representation.  A strong canonical result is not
+reported as globally robust if a substantial part of this declared multiverse
+selects a different frequency region.
+
+```{r sensitivity}
+show_tab(rd("bin_stability_summary.csv"))
+show_tab(rd("bin_grid_results.csv"))
+show_tab(rd("specification_results.csv"))
+show_tab(rd("observed_ritz_replication.csv"))
+```
+
+```{r sensitivity-figures}
+p <- fig("fig10_specification_curve.png"); if (!is.null(p)) knitr::include_graphics(p)
+p <- fig("specification_heatmap.png"); if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 11. In-sample versus held-out model comparison
+
+AIC/BIC improvement after selecting a frequency on the same data does not by
+itself demonstrate predictive transfer.  The held-out log-likelihood comparison
+is therefore reported separately and any negative transfer is retained as an
+explicit failed claim.
+
+```{r model-comparison}
+show_tab(rd("model_comparison.csv"))
+```
+
+```{r model-comparison-figure}
+p <- fig("fig11_model_comparison.png")
+if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 12. Injection and recovery
+
+Injection/recovery reports both detection of any significant peak and recovery
+inside the correct predefined frequency region.  These are not interchangeable:
+a detector that fires at the wrong frequency has not recovered the injected
+structure.
+
+```{r injection}
+show_tab(rd("injection_recovery.csv"))
+```
+
+```{r injection-figure}
+p <- fig("fig14_injection_recovery_power.png")
+if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 13. Computational parity
+
+```{r parity}
+show_tab(rd("python_r_parity.csv"))
+```
+
+```{r parity-figure}
+p <- fig("fig15_python_r_parity.png")
+if (!is.null(p)) knitr::include_graphics(p)
+```
+
+# 14. Interpretation boundaries
+
+This audit can support or weaken a claim of **statistical structure in this
+analysis pipeline**.  It cannot by itself establish:
+
+- independent experimental confirmation;
+- independence of observed/Ritz representations or blocked subsets drawn from
+  the same transition list;
+- a unique physical null model;
+- a WCT mechanism, causal explanation, or universal atomic law;
+- NIST endorsement of the analysis.
+
+The report therefore treats computational parity, same-dataset bootstrap
+stability, frozen holdouts, alternative-null robustness, and external physical
+replication as different evidentiary categories.
+
+# 15. Reproduction command
+
+The strict final runner does not use the development caps in
+`render_statistical_audit.R`.
+
+```{r reproduce}
+cat("Rscript R/run_final_adversarial_audit.R --parallel true --render-report true\n\n")
+manifest <- rd("final_adversarial_run_manifest.csv")
+if (!is.null(manifest)) show_tab(manifest)
+cat("\nSession information for this render:\n")
+sessionInfo()
+```
