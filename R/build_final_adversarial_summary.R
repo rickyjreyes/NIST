@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------------
 # Cross-cutting final evidence summary for the adversarial NIST audit.
 # Produces a conservative global-evidence dashboard, an explicit claim matrix,
-# and a table containing EVERY non-passing claim.  A failed result is never
+# and a table containing EVERY non-passing claim. A failed result is never
 # converted to a neutral label merely because another analysis passes.
 # ---------------------------------------------------------------------------
 
@@ -26,8 +26,6 @@ read_audit_table <- function(root, name, required = TRUE) {
 
 primary_row <- function(df) {
   if (is.null(df) || nrow(df) == 0L) return(NULL)
-  # Prefer exact canonical metadata when available.  This survives analysis-id
-  # naming changes and prevents a neighbouring sigma/degree variant being used.
   need <- c("species", "source", "bins", "sigma", "degree")
   if (all(need %in% names(df))) {
     hit <- which(df$species == "Fe" & df$source == "wavenumber" & df$bins == 160 &
@@ -93,6 +91,16 @@ build_summary <- function(root) {
   inj0 <- inj[inj$freq_name == "fe_reference" & abs(inj$amplitude) < 1e-12, , drop = FALSE]
   if (nrow(inj0) == 0L) inj0 <- inj[which.min(abs(inj$amplitude)), , drop = FALSE]
 
+  # Prefer the new adversarial holdout calibration.  Fallback keeps this summary
+  # readable against older development tables but the strict final runner will
+  # regenerate holdout_results.csv before calling us.
+  ho_p <- if ("conservative_fixed_k_test_p" %in% names(ho))
+    ho$conservative_fixed_k_test_p else ho$fixed_k_test_p
+  ho_refit_p <- if ("fixed_k_test_p_refit" %in% names(ho))
+    ho$fixed_k_test_p_refit else rep(NA_real_, nrow(ho))
+  ho_dir <- ho$direction_consistent %in% c(TRUE, "TRUE")
+  ho_ok <- is.finite(ho_p) & ho_p <= 0.05 & ho_dir
+
   by <- if ("by_fdr" %in% names(m)) m$by_fdr[1] else NA_real_
   multiplicity_fwer_worst <- max(c(m$family_max_p[1], m$holm_p[1], m$bonferroni_p[1]), na.rm = TRUE)
   p_candidates <- c(s$global_p[1], m$family_max_p[1], m$holm_p[1],
@@ -124,9 +132,10 @@ build_summary <- function(root) {
     calibration_ci_hi = c05$ci_hi[1],
     calibration_compatible = is_true(c05$compatible[1]),
     holdout_designs = nrow(ho),
-    holdout_sig_direction_consistent = sum(is.finite(ho$fixed_k_test_p) & ho$fixed_k_test_p <= 0.05 &
-                                            ho$direction_consistent %in% c(TRUE, "TRUE")),
-    holdout_median_fixed_k_p = stats::median(ho$fixed_k_test_p, na.rm = TRUE),
+    holdout_sig_direction_consistent = sum(ho_ok),
+    holdout_median_historical_fixed_p = stats::median(ho$fixed_k_test_p, na.rm = TRUE),
+    holdout_median_refit_p = stats::median(ho_refit_p, na.rm = TRUE),
+    holdout_median_conservative_p = stats::median(ho_p, na.rm = TRUE),
     heldout_model_loglik_gain_M1_minus_M0 = heldout_gain,
     bin_reference_fraction = bins$pct_in_reference[1],
     bootstrap_peak_reference_fraction = primary_peak$pct_in_reference[1],
@@ -160,7 +169,7 @@ build_summary <- function(root) {
               if (length(bad_alt)) paste0("; p>0.05 under: ", paste(bad_alt, collapse = ", ")) else ""),
       "all declared null-model scan-global p <= 0.05",
       if (length(bad_alt) == 0L) "pass" else "fail",
-      "alternative nulls are stress tests, not a claim that one generator is the unique physical null",
+      "post-signal adversarial stress tests; not historical preregistration and not a claim that one generator is the unique physical null",
       "alternative_null_results.csv")
 
   add("Synthetic-null false-positive calibration", "null_calibration",
@@ -170,15 +179,13 @@ build_summary <- function(root) {
       "calibration tests the canonical fitted-Poisson synthetic null; alternative-null robustness is reported separately",
       "null_calibration.csv")
 
-  hverd <- holdout_verdict(ho$fixed_k_test_p, ho$direction_consistent %in% c(TRUE, "TRUE"))
+  hverd <- holdout_verdict(ho_p, ho_dir)
   add("Frozen blocked holdout replication", "run_holdout_replication",
-      sprintf("%d/%d designs have p<=0.05 and positive locked-k direction; median p=%.4g",
-              sum(is.finite(ho$fixed_k_test_p) & ho$fixed_k_test_p <= 0.05 &
-                  ho$direction_consistent %in% c(TRUE, "TRUE")),
-              nrow(ho), stats::median(ho$fixed_k_test_p, na.rm = TRUE)),
-      "strict: every declared blocked design p<=0.05 with positive direction",
+      sprintf("%d/%d designs have conservative p<=0.05 and positive direction; median conservative p=%.4g",
+              sum(ho_ok), nrow(ho), stats::median(ho_p, na.rm = TRUE)),
+      "strict: every declared blocked design conservative p<=0.05 with positive direction",
       hverd,
-      "k is frozen from each training block; blocks still come from one line list and are not independent experiments",
+      "k is frozen from training; conservative p=max(fixed-baseline, baseline-refit null calibration); blocks still come from one line list and are not independent experiments",
       "holdout_results.csv")
 
   add("Held-out predictive transfer of smooth-plus-periodic model", "model_comparison",
@@ -188,22 +195,22 @@ build_summary <- function(root) {
       "model_comparison.csv")
 
   add("Declared Fe II bin stability", "bin_stability_summary",
-      sprintf("%.1f%% of predefined bins select the reference region", 100 * bins$pct_in_reference[1]),
-      ">= 80% (predeclared descriptive threshold)",
+      sprintf("%.1f%% of audit-declared bins select the reference region", 100 * bins$pct_in_reference[1]),
+      ">= 80% (audit-declared descriptive threshold)",
       threshold_verdict(bins$pct_in_reference[1], 0.80, TRUE),
-      "descriptive robustness threshold, not a universal physical law",
+      "descriptive robustness criterion, not historical preregistration or a universal physical threshold",
       "bin_stability_summary.csv")
 
   add("Bootstrap peak-region stability", "peak_stability",
       sprintf("%.1f%% of primary bootstrap resamples select the 2%% reference region", 100 * primary_peak$pct_in_reference[1]),
-      ">= 80% (predeclared descriptive threshold)",
+      ">= 80% (audit-declared descriptive threshold)",
       threshold_verdict(primary_peak$pct_in_reference[1], 0.80, TRUE),
       "resampling the same dataset does not constitute independent replication",
       "peak_stability.csv")
 
   add("Specification multiverse stability", "run_model_sensitivity",
       sprintf("%.1f%% of declared specifications select the reference region", 100 * spec_frac),
-      ">= 80% (adversarial descriptive threshold)",
+      ">= 80% (audit-declared descriptive threshold)",
       threshold_verdict(spec_frac, 0.80, TRUE),
       "the threshold is a robustness convention; the full specification table remains primary evidence",
       "specification_results.csv")
