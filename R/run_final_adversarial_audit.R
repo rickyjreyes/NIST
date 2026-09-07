@@ -23,9 +23,27 @@
 #   Rscript R/run_final_adversarial_audit.R --parallel true --render-report true
 # ---------------------------------------------------------------------------
 
-.this <- sub("^--file=", "", commandArgs(FALSE)[grep("^--file=", commandArgs(FALSE))][1])
-R_DIR <- if (length(.this) == 0L || is.na(.this)) "R" else dirname(.this)
-source(file.path(R_DIR, "audit_utils.R"))
+# Locate R/ robustly both when invoked directly and when sys.source()d from the
+# test suite. commandArgs() describes the top-level process, not necessarily the
+# currently sourced file, so it cannot be the sole locator.
+locate_final_r_dir <- function() {
+  all_args <- commandArgs(FALSE)
+  file_args <- sub("^--file=", "", all_args[grep("^--file=", all_args)])
+  invoked_dir <- if (length(file_args)) dirname(file_args[1]) else NA_character_
+  helper_dir <- if (exists("AUDIT_PATH", inherits = TRUE)) dirname(get("AUDIT_PATH", inherits = TRUE)) else NA_character_
+  candidates <- unique(c(invoked_dir, helper_dir, "R", file.path(getwd(), "R"), "."))
+  candidates <- candidates[!is.na(candidates) & nzchar(candidates)]
+  for (d in candidates) {
+    if (file.exists(file.path(d, "audit_utils.R")) &&
+        file.exists(file.path(d, "render_statistical_audit.R"))) {
+      return(normalizePath(d, mustWork = TRUE))
+    }
+  }
+  stop("could not locate repository R/ directory for final adversarial audit")
+}
+
+R_DIR <- locate_final_r_dir()
+if (!exists("audit_repo_root", mode = "function")) source(file.path(R_DIR, "audit_utils.R"))
 
 parse_args <- function(argv) {
   d <- list(
