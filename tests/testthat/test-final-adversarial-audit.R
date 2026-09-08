@@ -12,7 +12,8 @@
 test_that("final audit modules source and CLI runner parses without executing", {
   # Library-style modules are safe to source directly under testthat.
   for (name in c("global_multiple_testing.R", "run_alternative_nulls.R",
-                 "run_holdout_replication.R", "build_final_adversarial_summary.R")) {
+                 "run_holdout_replication.R", "build_final_adversarial_summary.R",
+                 "run_resolution_mode_diagnostics.R")) {
     e <- .src_final_module(name)
     expect_true(exists("main", envir = e, inherits = FALSE), info = name)
   }
@@ -109,4 +110,28 @@ test_that("baseline-refit holdout test requires a smoothing sigma", {
                       degree = 1, k = 2, B = 2, refit_baseline = TRUE),
     "sigma is required"
   )
+})
+
+test_that("matched smoothing holds approximate ell-space width fixed", {
+  d <- .src_final_module("run_resolution_mode_diagnostics.R")
+  expect_equal(d$matched_sigma(c(60, 80, 100, 160, 240)),
+               c(2.25, 3.00, 3.75, 6.00, 9.00))
+})
+
+test_that("resolution diagnostic extracts distinct ranked local peaks", {
+  d <- .src_final_module("run_resolution_mode_diagnostics.R")
+  scan <- data.frame(k = 1:7, deltaD = c(0, 3, 1, 4, 1, 2, 0))
+  peaks <- d$extract_top_peaks(scan, 3L)
+  expect_equal(peaks$k, c(4, 2, 6))
+  expect_equal(peaks$peak_rank, 1:3)
+})
+
+test_that("resolution branch labels distinguish frozen external and Fe primary modes", {
+  d <- .src_final_module("run_resolution_mode_diagnostics.R")
+  expect_equal(d$classify_peak_branch(9.63, d$GWTC_K_FROZEN, 31.3265, 0.02),
+               "external_gwtc_9p602")
+  expect_equal(d$classify_peak_branch(31.30, d$GWTC_K_FROZEN, 31.3265, 0.02),
+               "primary_fe")
+  expect_equal(d$classify_peak_branch(20, d$GWTC_K_FROZEN, 31.3265, 0.02),
+               "other")
 })
