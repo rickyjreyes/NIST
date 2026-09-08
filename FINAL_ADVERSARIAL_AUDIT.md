@@ -89,3 +89,17 @@ so zero exceedances are reported at the resolution floor `1/(B+1)`, never as `p=
 ## Claim boundaries
 
 This audit can evaluate the robustness of statistical structure in the declared NIST analysis. It does **not** establish independent experimental confirmation, a unique physical null, a WCT mechanism, a universal atomic law, or NIST endorsement.
+
+## Resolution-mode follow-up is separate
+
+A resolution-dependent winner discovered by the frozen bin-grid audit is investigated by the standalone `R/run_resolution_mode_diagnostics.R` module documented in `RESOLUTION_MODE_DIAGNOSTICS.md`.
+
+That follow-up deliberately does **not** run inside `run_final_adversarial_audit.R` and cannot overwrite its claim matrix. It compares the original fixed-sigma-bin pipeline with an approximately fixed `ell`-space smoothing width, tracks both the Fe primary mode and the previously frozen GWTC `k = 9.602325620315224`, stores the top five local peaks across a dense resolution grid, and performs conservative fixed-frequency null tests across Fe/neighboring-ion sources.
+
+Run it only after preserving the final audit outputs:
+
+```powershell
+Rscript R/run_resolution_mode_diagnostics.R --parallel true --fixed-null-n 5000
+```
+
+The NIST/GWTC frequency comparison is explicitly labeled post-hoc exploratory follow-up even though the GWTC target itself was frozen previously.
