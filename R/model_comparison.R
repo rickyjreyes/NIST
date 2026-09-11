@@ -15,6 +15,11 @@
 # multiplicity correction. M0 is a smooth statistical baseline, NOT a complete
 # physical atomic model.
 #
+# Held-out prediction uses the polynomial centering/scaling learned on the
+# training block and reuses that exact transform on the test block. Recomputing
+# the transform on the test block would put the training coefficients in a
+# different coordinate system and invalidate the out-of-sample score.
+#
 # Writes:
 #   tables_r/statistical_audit/model_comparison.csv
 #   figures_r/statistical_audit/model_comparison.png (+ fig11)
@@ -30,6 +35,20 @@ aic_bic <- function(loglik, npar, n) {
   aicc <- if (n - npar - 1 > 0) aic + (2 * npar * (npar + 1)) / (n - npar - 1) else NA_real_
   bic <- -2 * loglik + npar * log(n)
   c(aic = aic, aicc = aicc, bic = bic)
+}
+
+# Explicit polynomial transform for honest train -> test prediction.
+poly_transform <- function(ell) {
+  center <- mean(ell)
+  z <- ell - center
+  scale <- sqrt(mean(z * z))
+  if (!is.finite(scale) || scale <= 0) scale <- 1
+  list(center = center, scale = scale)
+}
+
+design_poly_from_transform <- function(ell, degree, transform) {
+  z <- (ell - transform$center) / transform$scale
+  do.call(cbind, lapply(0:degree, function(d) z^d))
 }
 
 # fit_models(): fit M0 and M1 at a given k on (ell,y,baseline). Returns metrics.
@@ -49,32 +68,38 @@ fit_models <- function(ell, y, baseline, degree, k) {
 }
 
 # heldout_predictive(): blocked split (lower half train / upper half test).
-# k is estimated on the training block and LOCKED, then both models are refit
-# on training and scored by predictive Poisson log-likelihood on the test block.
+# k is estimated on the training block and LOCKED, then both models are fit on
+# training and scored by predictive Poisson log-likelihood on the test block.
+# The polynomial transform is estimated on training only and frozen.
 heldout_predictive <- function(ell, y, baseline, degree, k_grid) {
   n <- length(y)
   mid <- floor(n / 2)
   tr <- seq_len(mid); te <- seq.int(mid + 1L, n)
+
   # lock k on training
   sk <- scan_k(ell[tr], y[tr], baseline[tr], k_grid, degree)
   k_lock <- sk$best$k_best
-  X0tr <- design_poly(ell[tr], degree)
+
+  tf <- poly_transform(ell[tr])
+  X0tr <- design_poly_from_transform(ell[tr], degree, tf)
   X1tr <- cbind(X0tr, cos(k_lock * ell[tr]), sin(k_lock * ell[tr]))
   f0 <- fit_poisson_loglinear(y[tr], baseline[tr], X0tr)
   f1 <- fit_poisson_loglinear(y[tr], baseline[tr], X1tr)
-  # predict on test using training betas (design built on test ell, centered by
-  # the training transform is approximated by recomputing design on test ell)
-  predict_mu <- function(beta, ell_te, base_te, degree, k = NULL) {
-    X0 <- design_poly(ell_te, degree)
+
+  predict_mu <- function(beta, ell_te, base_te, degree, transform, k = NULL) {
+    X0 <- design_poly_from_transform(ell_te, degree, transform)
     X <- if (is.null(k)) X0 else cbind(X0, cos(k * ell_te), sin(k * ell_te))
     eta <- pmin(pmax(as.numeric(X %*% beta), -10), 10)
     pmax(base_te * exp(eta), EPS)
   }
-  mu0_te <- predict_mu(f0$beta, ell[te], baseline[te], degree)
-  mu1_te <- predict_mu(f1$beta, ell[te], baseline[te], degree, k_lock)
+  mu0_te <- predict_mu(f0$beta, ell[te], baseline[te], degree, tf)
+  mu1_te <- predict_mu(f1$beta, ell[te], baseline[te], degree, tf, k_lock)
+
   list(k_lock = k_lock,
        ll0_test = poisson_loglik(y[te], mu0_te),
-       ll1_test = poisson_loglik(y[te], mu1_te))
+       ll1_test = poisson_loglik(y[te], mu1_te),
+       train_center = tf$center,
+       train_scale = tf$scale)
 }
 
 main <- function(argv = commandArgs(TRUE)) {
@@ -103,8 +128,12 @@ main <- function(argv = commandArgs(TRUE)) {
   tab$deltaBIC <- tab$BIC - min(tab$BIC)
   tab$selected_k <- k
   tab$heldout_k_lock <- ho$k_lock
+  tab$heldout_train_center <- ho$train_center
+  tab$heldout_train_scale <- ho$train_scale
   tab$deviance_difference <- fm$deviance0 - fm$deviance1
-  tab$note <- "k selected by scan; AIC/BIC do not fully account for look-elsewhere"
+  tab$note <- paste(
+    "k selected by scan; AIC/BIC do not fully account for look-elsewhere;",
+    "held-out polynomial transform frozen from training block")
   write_table(tab, file.path(root, "tables_r/statistical_audit/model_comparison.csv"))
 
   plotdf <- data.frame(
