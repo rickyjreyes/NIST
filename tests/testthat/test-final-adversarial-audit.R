@@ -13,7 +13,7 @@ test_that("final audit modules source and CLI runner parses without executing", 
   # Library-style modules are safe to source directly under testthat.
   for (name in c("global_multiple_testing.R", "run_alternative_nulls.R",
                  "run_holdout_replication.R", "build_final_adversarial_summary.R",
-                 "run_resolution_mode_diagnostics.R")) {
+                 "run_resolution_mode_diagnostics.R", "model_comparison.R")) {
     e <- .src_final_module(name)
     expect_true(exists("main", envir = e, inherits = FALSE), info = name)
   }
@@ -110,6 +110,23 @@ test_that("baseline-refit holdout test requires a smoothing sigma", {
                       degree = 1, k = 2, B = 2, refit_baseline = TRUE),
     "sigma is required"
   )
+})
+
+test_that("held-out polynomial prediction reuses the training transform", {
+  mc <- .src_final_module("model_comparison.R")
+  tr <- c(1, 2, 3, 4)
+  te <- c(10, 11)
+  tf <- mc$poly_transform(tr)
+
+  # The explicit frozen transform must reproduce the canonical design on train.
+  expect_equal(mc$design_poly_from_transform(tr, 2, tf), design_poly(tr, 2),
+               tolerance = 1e-12)
+
+  # Test points are mapped with TRAINING center/scale, not their own statistics.
+  expected_z <- (te - mean(tr)) / sqrt(mean((tr - mean(tr))^2))
+  x_te <- mc$design_poly_from_transform(te, 1, tf)
+  expect_equal(x_te[, 2], expected_z, tolerance = 1e-12)
+  expect_false(isTRUE(all.equal(x_te[, 2], design_poly(te, 1)[, 2])))
 })
 
 test_that("matched smoothing holds approximate ell-space width fixed", {
