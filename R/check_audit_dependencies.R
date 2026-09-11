@@ -9,12 +9,12 @@
 
 REQUIRED_PKGS <- c(
   "jsonlite", "gmp", "dplyr", "tidyr", "purrr", "readr", "stringr",
-  "tibble", "ggplot2", "scales", "viridisLite"
+  "tibble", "ggplot2", "scales", "viridisLite", "viridis"
 )
 
 OPTIONAL_PKGS <- c(
   # reporting / figures
-  "patchwork", "ggridges", "ggrepel", "viridis", "gt", "ragg", "svglite",
+  "patchwork", "ggridges", "ggrepel", "gt", "ragg", "svglite",
   "quarto",
   # statistical tooling
   "boot", "broom", "rsample", "future", "future.apply", "progressr"
