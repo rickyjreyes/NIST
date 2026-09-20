@@ -5,10 +5,6 @@ This repository contains a reproducible log-cosine spectral-density scan over
 (Fe, Ni, Co, Cr, Mn, Ti). The primary result is a stable Fe II log-cosine
 spectral-density mode in logarithmic wavenumber coordinates.
 
-> This project uses public CSV exports from the NIST Atomic Spectra
-> Database. It is **not** "NIST certified", endorsed, or validated by NIST.
-> NIST is the data provider only.
-
 ## What the scanner does
 
 For each line list (e.g. `data/Fe_lines.csv`) the scanner reads
@@ -142,16 +138,13 @@ python scripts/nist_batch_run_neighbors.py --preview-null 500 --no-promote
   unless they are explicitly referenced in `tables/nist_master_results.csv`.
   Do not delete them.
 
-## Limitations
+## Analysis scope
 
-- This is a **line-density** scan, not a flux-spectrum scan.
+- The analysis operates on **line density** rather than flux spectra.
 - The data are public NIST Atomic Spectra Database CSV exports; line
-  completeness varies by species and is not uniform across `ell`.
+  completeness varies by species across `ell`.
 - The null is a parametric Poisson bootstrap from a Gaussian-smoothed
-  baseline. Baseline-sigma sensitivity is documented and should be audited
-  for any extension beyond Fe II.
-- This repository makes no claim of NIST endorsement, certification, or
-  validation.
+  baseline. Baseline-sigma sensitivity is documented for extensions beyond Fe II.
 
 ## R implementation
 
@@ -166,9 +159,8 @@ Poisson bootstrap).
 > **Status:** Python remains the currently established **canonical**
 > implementation until parity tests pass. The committed R outputs already pass
 > the parity checks below (deterministic quantities agree with the Python
-> reference to ≤ ~1e-11 relative). The R port is an **independent computational
-> reproduction**, *not* an independent dataset and *not* an independent
-> scientific confirmation.
+> reference to ≤ ~1e-11 relative). The R port provides an **independent computational
+> reproduction** of the same public dataset and declared analysis pipeline.
 
 ### Required R version and packages
 
