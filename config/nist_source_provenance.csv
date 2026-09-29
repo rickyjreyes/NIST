@@ -1,0 +1,3 @@
+species,source_provider,retrieval_date,retrieval_version,retrieval_url_or_query,notes
+Fe,NIST spectral-line dataset,,,,"Populate from the authoritative original NIST retrieval/export record; do not infer or invent."
+Co,NIST spectral-line dataset,,,,"Populate from the authoritative original NIST retrieval/export record; do not infer or invent."
