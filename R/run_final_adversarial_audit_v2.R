@@ -71,7 +71,7 @@ main <- function(argv = commandArgs(TRUE)) {
   ))
 
   cat("\n=== PHASE 3: classify and freeze only if PASS ===\n")
-  run_main_from("finalize_adversarial_audit.R", character(0))
+  run_main_from("finalize_adversarial_audit_v2.R", character(0))
   invisible(TRUE)
 }
 

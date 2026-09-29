@@ -37,15 +37,22 @@ test_that("zero-exceedance Monte Carlo is never p zero", {
 test_that("freeze gate has exactly the declared classification labels", {
   txt <- paste(readLines("R/finalize_adversarial_audit.R", warn = FALSE), collapse = "\n")
   expect_match(txt, "PASS — ADVERSARIAL AUDIT SURVIVED")
-  expect_match(txt, 'CONDITIONAL')
-  expect_match(txt, 'FAIL')
-  expect_match(txt, 'results/final_adversarial_audit_v1')
-  expect_match(txt, 'if \\(!identical\\(classification, PASS_LABEL\\)\\)')
+  expect_match(txt, "CONDITIONAL")
+  expect_match(txt, "FAIL")
+  expect_match(txt, "results/final_adversarial_audit_v1")
+  expect_match(txt, "if \\(!identical\\(classification, PASS_LABEL\\)\\)")
+})
+
+test_that("corrected finalizer avoids classifier shadowing and platform path regex", {
+  txt <- paste(readLines("R/finalize_adversarial_audit_v2.R", warn = FALSE), collapse = "\n")
+  expect_match(txt, "ctab <- cal")
+  expect_match(txt, "base::c\\(0.10, 0.05, 0.01, 0.001\\)")
+  expect_match(txt, "basename\\(json_path\\)")
 })
 
 test_that("source provenance cannot silently self-complete", {
   p <- read.csv("config/nist_source_provenance.csv", stringsAsFactors = FALSE)
   expect_true(all(c("Fe", "Co") %in% p$species))
-  expect_true(all(!nzchar(p$retrieval_date)))
-  expect_true(all(!nzchar(p$retrieval_version)))
+  expect_true(all(is.na(p$retrieval_date) | !nzchar(trimws(p$retrieval_date))))
+  expect_true(all(is.na(p$retrieval_version) | !nzchar(trimws(p$retrieval_version))))
 })
