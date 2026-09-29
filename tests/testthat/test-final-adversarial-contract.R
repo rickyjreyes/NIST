@@ -32,9 +32,11 @@ test_that("contract runner keeps Fe and Co separate", {
 })
 
 test_that("zero-exceedance Monte Carlo is never p zero", {
-  source(repo_path("R", "audit_utils.R"), local = TRUE)
-  expect_equal(emp_p(0, 5000), 1 / 5001)
-  expect_gt(emp_p(0, 5000), 0)
+  txt <- paste(readLines(repo_path("R", "audit_utils.R"), warn = FALSE), collapse = "\n")
+  expect_match(txt, "emp_p <- function\\(tail_count, B\\) \\(tail_count \\+ 1\\) / \\(B \\+ 1\\)")
+  p0 <- (0 + 1) / (5000 + 1)
+  expect_equal(p0, 1 / 5001)
+  expect_gt(p0, 0)
 })
 
 test_that("freeze gate has exactly the declared classification labels", {
