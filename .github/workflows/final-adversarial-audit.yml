@@ -1,0 +1,61 @@
+name: Final NIST adversarial audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/final-adversarial-stat-audit
+    paths:
+      - .github/final-adversarial-audit.trigger
+
+permissions:
+  contents: read
+
+concurrency:
+  group: final-nist-adversarial-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  final-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build pinned R audit image
+        run: docker build --progress=plain --file Dockerfile.r --tag nist-r-final .
+
+      - name: Run exact strict final audit
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -w /work \
+            nist-r-final \
+            Rscript R/render_statistical_audit.R \
+              --bootstrap-n 5000 \
+              --null-n 5000 \
+              --calibration-n 10000 \
+              --injection-n 2000 \
+              --seed 20260517 \
+              --parallel true \
+              --force \
+              --strict \
+              --render-report true
+
+      - name: Upload final audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nist-final-adversarial-audit-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            FINAL_ADVERSARIAL_AUDIT.md
+            final_adversarial_audit.json
+            REPRODUCE_FINAL_ADVERSARIAL_AUDIT.txt
+            tables_r/statistical_audit/
+            figures_r/statistical_audit/
+            reports/rendered/
+            results/final_adversarial_audit_v1/

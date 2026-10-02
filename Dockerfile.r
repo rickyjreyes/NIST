@@ -9,12 +9,20 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends libgmp-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# jsonlite/gmp/testthat cover the core computation and tests. ggplot2/viridis
+# are required by the audit figures; future/future.apply enable the declared
+# parallel path. If future is absent outside this image, the audit intentionally
+# falls back to the statistically identical sequential implementation.
 RUN install2.r --error --skipinstalled --ncpus -1 \
       jsonlite \
       gmp \
-      testthat
+      testthat \
+      ggplot2 \
+      viridis \
+      future \
+      future.apply
 
-RUN Rscript -e "required <- c('jsonlite', 'gmp', 'testthat'); missing <- required[!vapply(required, requireNamespace, logical(1), quietly=TRUE)]; if (length(missing)) stop('missing R packages: ', paste(missing, collapse=', '))"
+RUN Rscript -e "required <- c('jsonlite','gmp','testthat','ggplot2','viridis','future','future.apply'); missing <- required[!vapply(required, requireNamespace, logical(1), quietly=TRUE)]; if (length(missing)) stop('missing R packages: ', paste(missing, collapse=', '))"
 
 WORKDIR /app
 COPY . .

@@ -1,0 +1,76 @@
+{
+  "schema_version": "final_adversarial_audit_v1",
+  "generated_utc": "2026-10-02T14:40:49-0700",
+  "git_commit": "c8251c5fda271640eb543a425db6cdf3fb2c6cfe",
+  "working_tree_clean_at_finalize": false,
+  "canonical_seed": 20260517,
+  "budgets": {
+    "bootstrap_n": 5000,
+    "null_n": 5000,
+    "calibration_n": 10000,
+    "injection_n": 2000
+  },
+  "classifications": {
+    "Fe": "CONDITIONAL",
+    "Co": "CONDITIONAL"
+  },
+  "fe": {
+    "reproduces": true,
+    "bootstrap_survives": true,
+    "canonical_null_survives": true,
+    "alternative_nulls_survive": true,
+    "calibrated": true,
+    "injection_recovery": true,
+    "cross_binning": true,
+    "implementation_checks": true,
+    "influence_stable": true,
+    "fixed_frequency": {
+      "p": 0.0001999600079984,
+      "exceedances": 0,
+      "B": 5000,
+      "interpretation": "descriptive only because k was scan-selected from the same data"
+    },
+    "scan_global": {
+      "p": 0.0001999600079984,
+      "exceedances": 0,
+      "B": 5000
+    },
+    "corrected_global": {
+      "conservative_fwer_p": 0.0117976404719056,
+      "family_size": 59
+    }
+  },
+  "co": {
+    "reproduces": true,
+    "bootstrap_survives": true,
+    "canonical_null_survives": true,
+    "calibrated": true,
+    "injection_recovery": true,
+    "cross_binning": true,
+    "implementation_checks": true,
+    "influence_stable": true,
+    "fixed_frequency": {
+      "p": 0.0001999600079984,
+      "exceedances": 0,
+      "B": 5000,
+      "interpretation": "descriptive only because Co k was scan-selected from Co data"
+    },
+    "scan_global": {
+      "p": 0.0001999600079984,
+      "exceedances": 0,
+      "B": 5000
+    },
+    "corrected_global": {
+      "conservative_fwer_p": 0.0117976404719056,
+      "family_size": 59
+    },
+    "evidence_relationship": "independent species-level statistical audit; not pooled with Fe II; not claimed as an independent same-frequency experiment"
+  },
+  "provenance_complete": {
+    "Fe": false,
+    "Co": false
+  },
+  "source_scope": "Statistically robust empirical spectral regularity in the frozen NIST catalog, if the declared gates pass. This artifact alone does not validate Wave Confinement Theory as a physical theory or establish a causal mechanism.",
+  "unresolved": ["Exact NIST Fe II retrieval date/version/query provenance is not yet populated in `config/nist_source_provenance.csv`; repository hashes alone must not be presented as a source-version record.", "Exact NIST Co II retrieval date/version/query provenance is not yet populated in `config/nist_source_provenance.csv`."],
+  "reproduction_command": "# Canonical final adversarial audit\nRscript R/render_statistical_audit.R \\\n  --bootstrap-n 5000 \\\n  --null-n 5000 \\\n  --calibration-n 10000 \\\n  --injection-n 2000 \\\n  --seed 20260517 \\\n  --parallel true \\\n  --force \\\n  --strict \\\n  --render-report true\n\n# Sequential fallback is statistically identical when future/future.apply are unavailable:\n# use --parallel false; the canonical seed and per-replicate RNG streams are unchanged."
+}
