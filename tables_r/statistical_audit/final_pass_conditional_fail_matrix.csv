@@ -1,0 +1,3 @@
+"species","reproduction","bootstrap","canonical_null","calibration","injection","cross_binning","implementation","influence","multiple_testing","provenance_complete","classification"
+"Fe",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,"CONDITIONAL"
+"Co",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,"CONDITIONAL"

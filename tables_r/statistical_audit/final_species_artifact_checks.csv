@@ -1,0 +1,3 @@
+"species","raw_rows","retained_lines","duplicates_removed","missing_wavenumber","nonpositive_removed","cleaning_reconciles","sorting_k_abs_diff","sorting_stat_abs_diff","sorting_invariant","influence_reference_fraction","fft_applicable","fft_note"
+"Fe",20615,9447,415,0,0,TRUE,0,0,TRUE,1,FALSE,"canonical scanner is direct harmonic regression over an explicit k grid; no FFT normalization is used"
+"Co",3371,2450,132,0,0,TRUE,0,0,TRUE,1,FALSE,"canonical scanner is direct harmonic regression over an explicit k grid; no FFT normalization is used"
