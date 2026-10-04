@@ -131,7 +131,7 @@ Write-Host "Fe II classification: $classification"
 Write-Host "Co II classification: $($result.classifications.Co)"
 Write-Host ""
 Write-Host "Review the generated diff, then commit the release outputs. After that commit, create the immutable tag:" -ForegroundColor Yellow
-Write-Host "  git add FINAL_ADVERSARIAL_AUDIT.md REPRODUCE_FINAL_ADVERSARIAL_AUDIT.txt final_adversarial_audit.json tables_r/statistical_audit figures_r/statistical_audit outputs_r/statistical_audit results"
+Write-Host "  git add FINAL_ADVERSARIAL_AUDIT.md REPRODUCE_FINAL_ADVERSARIAL_AUDIT.txt final_adversarial_audit.json tables_r/statistical_audit figures_r/statistical_audit outputs_r/statistical_audit reports/rendered results"
 Write-Host "  git commit -m `"Freeze final NIST adversarial audit ($tagSuffix)`""
 Write-Host "  git tag -a $tag -m `"Final NIST adversarial audit: $classification`""
 Write-Host "  git push origin HEAD"
