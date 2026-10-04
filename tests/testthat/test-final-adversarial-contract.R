@@ -56,8 +56,29 @@ test_that("corrected finalizer avoids classifier shadowing and platform path reg
 })
 
 test_that("source provenance cannot silently self-complete", {
-  p <- read.csv(repo_path("config", "nist_source_provenance.csv"), stringsAsFactors = FALSE)
-  expect_true(all(c("Fe", "Co") %in% p$species))
+  p <- read.csv(repo_path("config", "nist_source_provenance.csv"),
+                stringsAsFactors = FALSE, check.names = FALSE, fileEncoding = "UTF-8")
+  if (length(names(p))) names(p)[1] <- sub("^\\ufeff", "", names(p)[1])
+  expect_equal(sort(p$species), c("Co", "Fe"))
+
+  # The exact historical retrieval date was not recovered and must remain
+  # blank; its disposition is explicit rather than inferred from May 25/27.
   expect_true(all(is.na(p$retrieval_date) | !nzchar(trimws(p$retrieval_date))))
-  expect_true(all(is.na(p$retrieval_version) | !nzchar(trimws(p$retrieval_version))))
+  expect_true(all(p$retrieval_date_status == "UNRECOVERABLE"))
+
+  # ASD v5.12 and the public Lines Form are recovered facts. The exact
+  # historical query/export parameterization is still explicitly unrecoverable.
+  expect_true(all(p$retrieval_version == "5.12"))
+  expect_true(all(nzchar(trimws(p$retrieval_url_or_query))))
+  expect_true(all(p$query_export_settings_status == "UNRECOVERABLE"))
+
+  # Every unrecoverable declaration must point to committed search evidence.
+  expect_true(all(nzchar(trimws(p$provenance_evidence))))
+  expect_true(all(file.exists(repo_path(p$provenance_evidence))))
+
+  # Hashes may be blank before the one-time local pin, but once populated they
+  # must be real SHA-256 values; MD5-like substitutes are not accepted.
+  h <- trimws(as.character(p$input_sha256))
+  populated <- !is.na(h) & nzchar(h)
+  expect_true(all(!populated | grepl("^[0-9A-Fa-f]{64}$", h)))
 })
