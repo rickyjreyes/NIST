@@ -1,0 +1,51 @@
+{
+  "schema_version": "resolution_invariant_protocol_v1",
+  "status": "FROZEN_BEFORE_FINAL_RUN",
+  "purpose": "Prospective follow-up to the original fixed-sigma 60-240 bin sensitivity; does not overwrite the canonical 120/160/200 audit gate.",
+  "species": "Fe",
+  "ion": 2,
+  "source": "wavenumber",
+  "transform": "ell = ln(wavenumber / cm^-1)",
+  "target_k": 31.3265306122449,
+  "target_origin": "frozen Fe II primary target from config/final_adversarial_audit.json",
+  "target_relative_tolerance": 0.02,
+  "bin_grid": [60, 80, 100, 120, 140, 160, 180, 200, 220, 240],
+  "smoothing": {
+    "rule": "sigma_bins(B) = 6 * B / 160",
+    "justification": "holds the approximate Gaussian smoothing width fixed in ell-space relative to the canonical 160-bin, sigma=6 analysis",
+    "reference_bins": 160,
+    "reference_sigma_bins": 6.0
+  },
+  "scan": {
+    "k_min": 0.5,
+    "k_max": 80.0,
+    "n_k": 2500,
+    "degree": 1,
+    "top_local_maxima_to_track": 5
+  },
+  "null": {
+    "model": "Poisson draws from the per-resolution smoothed null baseline with the same smoothing rule re-applied to each replicate",
+    "replicates_per_bin": 5000,
+    "seed": 20261004,
+    "plus_one_correction": true
+  },
+  "injection": {
+    "replicates_per_bin_per_amplitude": 2000,
+    "seed": 20261005,
+    "amplitude_ratios": [0.0, 0.5, 1.0],
+    "target_k_fixed": true
+  },
+  "decision_rules": {
+    "alpha": 0.05,
+    "winner_target_retention_min": 0.8,
+    "target_top5_retention_min": 0.8,
+    "zero_signal_false_lock_rate_max": 0.05,
+    "observed_amplitude_correct_recovery_min": 0.8
+  },
+  "reporting": {
+    "preserve_original_fixed_sigma_result": true,
+    "original_fixed_sigma_reference_retention": 0.70,
+    "report_all_declared_bins_including_failures": true,
+    "separate_from_canonical_final_audit": true
+  }
+}
