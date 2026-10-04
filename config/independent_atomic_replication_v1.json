@@ -1,0 +1,57 @@
+{
+  "schema_version": "independent_atomic_replication_v1",
+  "status": "FROZEN_BEFORE_EXTERNAL_OUTCOME_ACCESS",
+  "source": {
+    "name": "Kurucz CD-ROM 23 / GFALL atomic line catalog",
+    "catalog_level_independence": "separate Harvard-Smithsonian/Kurucz catalog; not an export of the frozen NIST ASD CSVs",
+    "metadata_page": "https://lweb.cfa.harvard.edu/amp/ampdata/kurucz23/sekur.html",
+    "expected_local_path": "external/kurucz/gfall.dat",
+    "raw_sha256": "",
+    "pin_hash_before_parsing": true
+  },
+  "selection": {
+    "species": "Fe II",
+    "kurucz_element_code": 26.01,
+    "require_nonnegative_lower_energy": true,
+    "require_nonnegative_upper_energy": true,
+    "wavenumber_definition": "abs(upper_energy_cm-1 - lower_energy_cm-1)",
+    "wavenumber_min_cm-1": 5721.4978,
+    "wavenumber_max_cm-1": 49990.73,
+    "duplicate_policy": "sort ascending wavenumber; retain first exact duplicate wavenumber",
+    "minimum_retained_lines_for_primary_test": 500
+  },
+  "primary_test": {
+    "target_k": 31.3265306122449,
+    "target_origin": "frozen NIST Fe II primary frequency",
+    "retune_target_on_replication_data": false,
+    "transform": "ell = ln(wavenumber / cm^-1)",
+    "bins": 160,
+    "baseline_sigma_bins": 6.0,
+    "degree": 1,
+    "statistic": "Poisson deviance improvement at the fixed target k",
+    "null_model": "Poisson draws from the smoothed external-catalog baseline with the baseline re-estimated in every null replicate",
+    "null_replicates": 5000,
+    "seed": 20261010,
+    "alpha": 0.05,
+    "plus_one_correction": true
+  },
+  "exploratory_scan": {
+    "allowed_after_primary_test": true,
+    "k_min": 0.5,
+    "k_max": 80.0,
+    "n_k": 2500,
+    "cannot_change_primary_classification": true
+  },
+  "classification": {
+    "PASS": "retained line count >= minimum and fixed-target empirical p <= alpha",
+    "FAIL": "retained line count >= minimum and fixed-target empirical p > alpha",
+    "INCONCLUSIVE": "source/provenance/hash invalid, parser/selection invalid, or retained line count below the frozen minimum"
+  },
+  "reporting": {
+    "report_effect_size": true,
+    "report_null_standardized_z": true,
+    "report_target_amplitude_and_phase": true,
+    "preserve_negative_result_without_retargeting": true,
+    "update_NIST_claim_language_only_after_classification": true
+  }
+}
