@@ -29,8 +29,9 @@ copy_file <- function(root, dest, rel, subdir = NULL) {
   if (!file.exists(src)) return(FALSE)
   dd <- if (is.null(subdir)) dest else file.path(dest, subdir)
   dir.create(dd, recursive = TRUE, showWarnings = FALSE)
-  ok <- file.copy(src, file.path(dd, basename(src)), overwrite = FALSE,
-                  copy.date = TRUE)
+  target <- file.path(dd, basename(src))
+  if (file.exists(target)) return(TRUE)
+  ok <- file.copy(src, target, overwrite = FALSE, copy.date = TRUE)
   if (!ok) stop("failed to copy release artifact: ", rel)
   TRUE
 }
@@ -41,10 +42,15 @@ copy_dir_files <- function(src_dir, dest_dir, pattern = NULL) {
   files <- files[!dir.exists(files)]
   dir.create(dest_dir, recursive = TRUE, showWarnings = FALSE)
   if (!length(files)) return(invisible(0L))
-  ok <- file.copy(files, file.path(dest_dir, basename(files)), overwrite = FALSE,
-                  copy.date = TRUE)
-  if (any(!ok)) stop("failed copying one or more release files from ", src_dir)
-  invisible(length(files))
+  copied <- 0L
+  for (src in files) {
+    target <- file.path(dest_dir, basename(src))
+    if (file.exists(target)) next
+    ok <- file.copy(src, target, overwrite = FALSE, copy.date = TRUE)
+    if (!ok) stop("failed copying release file: ", src)
+    copied <- copied + 1L
+  }
+  invisible(copied)
 }
 
 safe_label <- function(x) {
@@ -96,7 +102,8 @@ main <- function(argv = commandArgs(TRUE)) {
   copy_file(root, dest, "REPRODUCE_FINAL_ADVERSARIAL_AUDIT.txt")
   copy_file(root, dest, "reports/rendered/nist_final_adversarial_audit.html", "report")
 
-  # Exact R implementation used by the pinned commit.
+  # Exact implementation/configuration present at the pinned commit. Existing
+  # core config copies are skipped rather than treated as copy failures.
   copy_dir_files(file.path(root, "R"), file.path(dest, "scripts", "R"), "\\.R$")
   copy_dir_files(file.path(root, "config"), file.path(dest, "config"), "\\.(json|csv)$")
   copy_dir_files(file.path(root, "tables_r", "statistical_audit"),
@@ -120,6 +127,16 @@ main <- function(argv = commandArgs(TRUE)) {
   jsonlite::write_json(context, file.path(dest, "RUN_CONTEXT.json"), pretty = TRUE,
                        auto_unbox = TRUE, na = "null", digits = NA)
 
+  # State metadata is written before HASHES.csv so it is itself integrity-pinned.
+  writeLines(c(
+    paste("analysis_input_commit:", input_commit),
+    paste("classification_Fe:", machine$classifications$Fe),
+    paste("classification_Co:", machine$classifications$Co),
+    "clean_working_tree_at_canonical_run_start: true",
+    paste("snapshot_directory:", sub("\\\\", "/", dest)),
+    "policy: immutable-style; do not overwrite; CONDITIONAL is not PASS"
+  ), file.path(dest, "GIT_STATE.txt"))
+
   files <- list.files(dest, recursive = TRUE, full.names = TRUE)
   files <- files[!dir.exists(files)]
   # HASHES.csv is itself excluded from its own manifest to avoid recursion.
@@ -133,15 +150,6 @@ main <- function(argv = commandArgs(TRUE)) {
   if (any(!vapply(hashes$sha256, .prov$is_hex_sha256, logical(1))))
     stop("release snapshot contains a non-SHA-256 digest")
   utils::write.csv(hashes, file.path(dest, "HASHES.csv"), row.names = FALSE)
-
-  writeLines(c(
-    paste("analysis_input_commit:", input_commit),
-    paste("classification_Fe:", machine$classifications$Fe),
-    paste("classification_Co:", machine$classifications$Co),
-    "clean_working_tree_at_canonical_run_start: true",
-    paste("snapshot_directory:", sub("\\\\", "/", dest)),
-    "policy: immutable-style; do not overwrite; CONDITIONAL is not PASS"
-  ), file.path(dest, "GIT_STATE.txt"))
 
   cat("Created release snapshot: ", dest, "\n", sep = "")
   cat("Preserved Fe classification: ", fe_class, "\n", sep = "")
