@@ -95,13 +95,20 @@ parse_mode <- function(argv) {
   "check"
 }
 
+read_provenance_config <- function(path) {
+  cfg <- utils::read.csv(path, stringsAsFactors = FALSE, check.names = FALSE,
+                         fileEncoding = "UTF-8")
+  # Be tolerant of a legacy UTF-8 BOM without requiring one.
+  if (length(names(cfg))) names(cfg)[1] <- sub("^\\ufeff", "", names(cfg)[1])
+  cfg
+}
+
 main <- function(argv = commandArgs(TRUE)) {
   root <- audit_repo_root()
   cfg_path <- file.path(root, "config", "nist_source_provenance.csv")
   if (!file.exists(cfg_path)) stop("missing provenance config: ", cfg_path)
 
-  cfg <- utils::read.csv(cfg_path, stringsAsFactors = FALSE, check.names = FALSE,
-                         fileEncoding = "UTF-8-BOM")
+  cfg <- read_provenance_config(cfg_path)
   required <- c(
     "species", "source_provider", "retrieval_date", "retrieval_date_status",
     "retrieval_version", "retrieval_url_or_query", "query_export_settings_status",
@@ -112,6 +119,8 @@ main <- function(argv = commandArgs(TRUE)) {
 
   if (!identical(sort(unique(cfg$species)), c("Co", "Fe")))
     stop("provenance config must contain exactly one Fe and one Co row")
+  if (nrow(cfg) != 2L || anyDuplicated(cfg$species))
+    stop("provenance config must contain exactly one row per Fe/Co species")
 
   allowed_status <- c("RECOVERED", "UNRECOVERABLE")
   if (any(!toupper(trimws(cfg$retrieval_date_status)) %in% allowed_status))
@@ -120,7 +129,7 @@ main <- function(argv = commandArgs(TRUE)) {
     stop("query_export_settings_status must be RECOVERED or UNRECOVERABLE")
 
   evidence_ok <- vapply(cfg$provenance_evidence, function(rel) {
-    nzchar(trimws(rel)) && file.exists(file.path(root, rel))
+    !is.na(rel) && nzchar(trimws(rel)) && file.exists(file.path(root, rel))
   }, logical(1))
   if (any(!evidence_ok)) stop("provenance evidence record missing for one or more species")
 
@@ -150,8 +159,8 @@ main <- function(argv = commandArgs(TRUE)) {
   query_status <- toupper(trimws(cfg$query_export_settings_status))
   exact_recovered <- date_status == "RECOVERED" & query_status == "RECOVERED"
   record_complete <- evidence_ok &
-    nzchar(trimws(cfg$source_provider)) &
-    nzchar(trimws(cfg$retrieval_version)) &
+    !is.na(cfg$source_provider) & nzchar(trimws(cfg$source_provider)) &
+    !is.na(cfg$retrieval_version) & nzchar(trimws(cfg$retrieval_version)) &
     vapply(actual, is_hex_sha256, logical(1))
 
   out <- data.frame(
