@@ -1,0 +1,2 @@
+"timestamp","git_commit","canonical_seed","bootstrap_n","null_n","source_bootstrap_n","sensitivity_null_n","holdout_null_n","family_n","calibration_n","injection_n","injection_null_n","alternative_null_n","alternative_block_len","parallel","all_modules_ok","report_requested","report_expected_path"
+"2026-10-06T18:45:17-0700","5437891",20260517,5000,5000,2000,1000,5000,5000,10000,2000,5000,5000,8,TRUE,TRUE,TRUE,"R:\RESEARCH\NIST/reports/rendered/nist_final_adversarial_audit.html"

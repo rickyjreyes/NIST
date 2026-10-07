@@ -42,3 +42,6 @@ tables/
 !tables/*.csv
 !tables/*.json
 !tables/*.md
+
+# External replication source bytes stay local and are identity-pinned by SHA-256.
+external/kurucz/gfall.dat

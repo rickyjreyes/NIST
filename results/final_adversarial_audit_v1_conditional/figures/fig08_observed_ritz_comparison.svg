@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' width='648.00pt' height='432.00pt' viewBox='0 0 648.00 432.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHw2NDguMDB8MC4wMHw0MzIuMDA='>
+    <rect x='0.00' y='0.00' width='648.00' height='432.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw2NDguMDB8MC4wMHw0MzIuMDA=)'>
+<rect x='0.00' y='0.00' width='648.00' height='432.00' style='stroke-width: 1.16; stroke: none; fill: #FFFFFF;' />
+</g>
+<defs>
+  <clipPath id='cpNzQuMDl8NjQyLjAyfDQyLjI5fDM5Ny40Mg=='>
+    <rect x='74.09' y='42.29' width='567.93' height='355.13' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpNzQuMDl8NjQyLjAyfDQyLjI5fDM5Ny40Mg==)'>
+<polyline points='74.09,330.83 642.02,330.83 ' style='stroke-width: 0.53; stroke: #E0E0E0; stroke-linecap: butt;' />
+<polyline points='74.09,219.86 642.02,219.86 ' style='stroke-width: 0.53; stroke: #E0E0E0; stroke-linecap: butt;' />
+<polyline points='74.09,108.88 642.02,108.88 ' style='stroke-width: 0.53; stroke: #E0E0E0; stroke-linecap: butt;' />
+<polyline points='150.02,397.42 150.02,42.29 ' style='stroke-width: 0.53; stroke: #E0E0E0; stroke-linecap: butt;' />
+<polyline points='296.90,397.42 296.90,42.29 ' style='stroke-width: 0.53; stroke: #E0E0E0; stroke-linecap: butt;' />
+<polyline points='443.77,397.42 443.77,42.29 ' style='stroke-width: 0.53; stroke: #E0E0E0; stroke-linecap: butt;' />
+<polyline points='590.64,397.42 590.64,42.29 ' style='stroke-width: 0.53; stroke: #E0E0E0; stroke-linecap: butt;' />
+<polyline points='569.48,117.20 569.48,100.55 ' style='stroke-width: 1.16; stroke: #D55E00; stroke-linecap: butt;' />
+<polyline points='569.48,108.88 99.91,108.88 ' style='stroke-width: 1.16; stroke: #D55E00; stroke-linecap: butt;' />
+<polyline points='99.91,117.20 99.91,100.55 ' style='stroke-width: 1.16; stroke: #D55E00; stroke-linecap: butt;' />
+<polyline points='616.21,339.16 616.21,322.51 ' style='stroke-width: 1.16; stroke: #0072B2; stroke-linecap: butt;' />
+<polyline points='616.21,330.83 102.24,330.83 ' style='stroke-width: 1.16; stroke: #0072B2; stroke-linecap: butt;' />
+<polyline points='102.24,339.16 102.24,322.51 ' style='stroke-width: 1.16; stroke: #0072B2; stroke-linecap: butt;' />
+<polyline points='570.65,228.18 570.65,211.53 ' style='stroke-width: 1.16; stroke: #009E73; stroke-linecap: butt;' />
+<polyline points='570.65,219.86 194.52,219.86 ' style='stroke-width: 1.16; stroke: #009E73; stroke-linecap: butt;' />
+<polyline points='194.52,228.18 194.52,211.53 ' style='stroke-width: 1.16; stroke: #009E73; stroke-linecap: butt;' />
+<circle cx='335.86' cy='108.88' r='4.65' style='stroke-width: 0.77; stroke: #D55E00; fill: #D55E00;' />
+<circle cx='335.86' cy='330.83' r='4.65' style='stroke-width: 0.77; stroke: #0072B2; fill: #0072B2;' />
+<circle cx='335.86' cy='219.86' r='4.65' style='stroke-width: 0.77; stroke: #009E73; fill: #009E73;' />
+</g>
+<g clip-path='url(#cpMC4wMHw2NDguMDB8MC4wMHw0MzIuMDA=)'>
+<text x='68.71' y='334.33' text-anchor='end' style='font-size: 9.60px;fill: #4D4D4D; font-family: "Liberation Sans";' textLength='44.47px' lengthAdjust='spacingAndGlyphs'>observed</text>
+<text x='68.71' y='223.35' text-anchor='end' style='font-size: 9.60px;fill: #4D4D4D; font-family: "Liberation Sans";' textLength='15.40px' lengthAdjust='spacingAndGlyphs'>ritz</text>
+<text x='68.71' y='112.37' text-anchor='end' style='font-size: 9.60px;fill: #4D4D4D; font-family: "Liberation Sans";' textLength='62.73px' lengthAdjust='spacingAndGlyphs'>wavenumber</text>
+<text x='150.02' y='409.79' text-anchor='middle' style='font-size: 9.60px;fill: #4D4D4D; font-family: "Liberation Sans";' textLength='21.34px' lengthAdjust='spacingAndGlyphs'>31.2</text>
+<text x='296.90' y='409.79' text-anchor='middle' style='font-size: 9.60px;fill: #4D4D4D; font-family: "Liberation Sans";' textLength='21.34px' lengthAdjust='spacingAndGlyphs'>31.3</text>
+<text x='443.77' y='409.79' text-anchor='middle' style='font-size: 9.60px;fill: #4D4D4D; font-family: "Liberation Sans";' textLength='21.34px' lengthAdjust='spacingAndGlyphs'>31.4</text>
+<text x='590.64' y='409.79' text-anchor='middle' style='font-size: 9.60px;fill: #4D4D4D; font-family: "Liberation Sans";' textLength='21.34px' lengthAdjust='spacingAndGlyphs'>31.5</text>
+<text x='358.06' y='423.52' text-anchor='middle' style='font-size: 12.00px; font-family: "Liberation Sans";' textLength='138.77px' lengthAdjust='spacingAndGlyphs'>k_best (rad / ln cm^-1)</text>
+<text x='74.09' y='33.81' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Liberation Sans";' textLength='532.49px' lengthAdjust='spacingAndGlyphs'>Observed / Ritz / direct wavenumber. Not fully independent (often the same transitions).</text>
+<text x='74.09' y='16.18' style='font-size: 14.00px; font-weight: bold; font-family: "Liberation Sans";' textLength='445.63px' lengthAdjust='spacingAndGlyphs'>Fe II peak location across measurement representations</text>
+</g>
+</svg>
