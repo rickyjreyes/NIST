@@ -1,0 +1,6 @@
+analysis_input_commit: 54378912bbfdf39bd7304cdf92b4b81782e18bcc
+classification_Fe: CONDITIONAL
+classification_Co: CONDITIONAL
+clean_working_tree_at_canonical_run_start: true
+snapshot_directory: R:/RESEARCH\NIST/results/final_adversarial_audit_v1_conditional
+policy: immutable-style; do not overwrite; CONDITIONAL is not PASS

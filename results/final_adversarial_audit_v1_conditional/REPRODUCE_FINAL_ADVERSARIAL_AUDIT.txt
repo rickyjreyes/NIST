@@ -1,0 +1,14 @@
+# Canonical final adversarial audit
+Rscript R/render_statistical_audit.R \
+  --bootstrap-n 5000 \
+  --null-n 5000 \
+  --calibration-n 10000 \
+  --injection-n 2000 \
+  --seed 20260517 \
+  --parallel true \
+  --force \
+  --strict \
+  --render-report true
+
+# Sequential fallback is statistically identical when future/future.apply are unavailable:
+# use --parallel false; the canonical seed and per-replicate RNG streams are unchanged.

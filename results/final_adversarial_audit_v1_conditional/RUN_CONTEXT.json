@@ -1,0 +1,26 @@
+{
+  "schema_version": "nist_clean_release_snapshot_v1",
+  "analysis_input_commit": "54378912bbfdf39bd7304cdf92b4b81782e18bcc",
+  "current_head": "54378912bbfdf39bd7304cdf92b4b81782e18bcc",
+  "clean_working_tree_at_canonical_run_start": true,
+  "classification": {
+    "Fe": "CONDITIONAL",
+    "Co": "CONDITIONAL"
+  },
+  "canonical_seed": 20260517,
+  "budgets": {
+    "bootstrap_n": 5000,
+    "null_n": 5000,
+    "calibration_n": 10000,
+    "injection_n": 2000
+  },
+  "provenance_record_complete": {
+    "Fe": true,
+    "Co": true
+  },
+  "exact_historical_provenance_recovered": {
+    "Fe": false,
+    "Co": false
+  },
+  "snapshot_policy": "immutable-style; directory name preserves PASS/CONDITIONAL/FAIL; a conditional snapshot must never be cited as a PASS release"
+}

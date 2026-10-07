@@ -22,8 +22,8 @@
     "confirmatory": "confirmatory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bin120_confirm",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:15-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:05-0700",
+    "git_commit": "5437891",
     "searched_family": false
   },
   {
@@ -49,8 +49,8 @@
     "confirmatory": "confirmatory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bin160_confirm",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:15-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:05-0700",
+    "git_commit": "5437891",
     "searched_family": false
   },
   {
@@ -76,8 +76,8 @@
     "confirmatory": "confirmatory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bin200_confirm",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:15-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:05-0700",
+    "git_commit": "5437891",
     "searched_family": false
   },
   {
@@ -103,8 +103,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bingrid60",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:15-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:06-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -130,8 +130,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bingrid80",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:16-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:06-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -157,8 +157,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bingrid100",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:16-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:06-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -184,8 +184,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bingrid120",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:16-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:06-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -211,8 +211,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bingrid140",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:16-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:06-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -238,8 +238,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bingrid160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:17-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:07-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -265,8 +265,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bingrid180",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:17-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:07-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -292,8 +292,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bingrid200",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:17-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:07-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -319,8 +319,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bingrid220",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:17-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:07-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -346,8 +346,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_bingrid240",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:17-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:07-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -373,8 +373,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig4_deg0_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:18-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:08-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -400,8 +400,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig4_deg1_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:18-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:08-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -427,8 +427,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig4_deg2_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:18-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:08-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -454,8 +454,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig5_deg0_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:18-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:08-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -481,8 +481,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig5_deg1_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:18-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:08-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -508,8 +508,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig5_deg2_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:18-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:08-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -535,8 +535,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig6_deg0_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:19-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:09-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -562,8 +562,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig6_deg1_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:19-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:09-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -589,8 +589,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig6_deg2_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:19-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:09-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -616,8 +616,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig7_deg0_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:19-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:09-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -643,8 +643,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig7_deg1_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:19-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:09-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -670,8 +670,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig7_deg2_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:19-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:10-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -697,8 +697,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig8_deg0_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:20-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:10-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -724,8 +724,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig8_deg1_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:20-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:10-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -751,8 +751,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wn_sig8_deg2_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:20-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:10-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -778,8 +778,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_observed_bin160_src",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:20-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:10-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -805,8 +805,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_ritz_bin160_src",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:20-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:10-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -832,8 +832,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/fe_ion2_wavenumber_bin160_src",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:21-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:11-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -859,8 +859,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/cr_ion2_wn_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:21-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:11-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -886,8 +886,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/mn_ion2_wn_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:21-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:11-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -913,8 +913,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/co_ion2_wn_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:21-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:11-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -940,8 +940,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/ni_ion2_wn_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:22-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:12-0700",
+    "git_commit": "5437891",
     "searched_family": true
   },
   {
@@ -967,8 +967,8 @@
     "confirmatory": "exploratory",
     "output_path": "outputs_r/statistical_audit/ti_ion2_wn_bin160",
     "software": "R/nist_scan_lib.R (canonical reproduction)",
-    "timestamp": "2026-09-30T12:12:22-0700",
-    "git_commit": "c8251c5",
+    "timestamp": "2026-10-05T02:34:12-0700",
+    "git_commit": "5437891",
     "searched_family": true
   }
 ]

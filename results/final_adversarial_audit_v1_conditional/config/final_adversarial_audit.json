@@ -1,0 +1,48 @@
+{
+  "schema_version": "final_adversarial_audit_v1",
+  "seed": 20260517,
+  "budgets": {
+    "bootstrap_n": 5000,
+    "null_n": 5000,
+    "calibration_n": 10000,
+    "injection_n": 2000
+  },
+  "frozen_analysis": {
+    "ion": 2,
+    "source": "wavenumber",
+    "transform": "ell = ln(wavenumber / cm^-1)",
+    "bins": [120, 160, 200],
+    "primary_bins": 160,
+    "k_min": 0.5,
+    "k_max": 80.0,
+    "n_k": 2500,
+    "baseline_sigma": 6.0,
+    "degree": 1,
+    "peak_region_relative_tolerance": 0.02
+  },
+  "decision_rules": {
+    "alpha": 0.05,
+    "bootstrap_peak_retention_min": 0.8,
+    "injection_observed_amplitude_power_min": 0.8,
+    "injection_zero_signal_fpr_max": 0.05,
+    "influence_peak_retention_min": 0.8,
+    "calibration_levels": [0.1, 0.05, 0.01, 0.001]
+  },
+  "expected": {
+    "Fe": {
+      "retained_lines": 9447,
+      "k_primary": 31.3265306122449,
+      "historical_role": "primary"
+    },
+    "Co": {
+      "retained_lines": 2450,
+      "k_primary": 30.2448979591837,
+      "historical_role": "independent species-level robustness check"
+    }
+  },
+  "interpretation": {
+    "fixed_frequency": "descriptive when the frequency was selected by a scan of the same data",
+    "discovery": "use scan-global and declared-family multiple-testing correction",
+    "claim_boundary": "a robust catalog regularity does not by itself validate Wave Confinement Theory as a physical theory"
+  }
+}
